@@ -13,6 +13,9 @@ import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.config.DefaultConfig;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.Order;
+import org.spongepowered.api.event.action.InteractEvent;
+import org.spongepowered.api.event.entity.TargetEntityEvent;
 import org.spongepowered.api.event.game.GameReloadEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.plugin.Plugin;
@@ -26,6 +29,8 @@ import co.aikar.commands.SpongeCommandManager;
 import me.pietelite.einsteinsworkshopedu.freeze.FreezeCommand;
 import me.pietelite.einsteinsworkshopedu.freeze.FreezeManager;
 import me.pietelite.einsteinsworkshopedu.freeze.UnfreezeCommand;
+import me.pietelite.einsteinsworkshopedu.listeners.InteractEventListener;
+import me.pietelite.einsteinsworkshopedu.listeners.TargetEntityEventListener;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
@@ -153,7 +158,8 @@ public class EWEDUPlugin {
 
 
 	private void registerListeners() {
-		// Sponge.getEventManager().registerListener(this, ChangeBlockEvent.Break.class, Order.LAST, new GriefDestroyListener(this));
+		Sponge.getEventManager().registerListener(this, TargetEntityEvent.class, Order.LAST, new TargetEntityEventListener(this));
+		Sponge.getEventManager().registerListener(this, InteractEvent.class, Order.LAST, new InteractEventListener(this));
 		
 	}	
 

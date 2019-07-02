@@ -11,10 +11,8 @@ import me.pietelite.einsteinsworkshopedu.EWEDUPlugin;
 public class FreezeManager {
 
 	private List<UUID> frozenPlayers;
-	private EWEDUPlugin plugin;
 	
 	public FreezeManager(EWEDUPlugin plugin) {
-		this.plugin = plugin;
 		this.frozenPlayers = new LinkedList<UUID>();
 	}
 	

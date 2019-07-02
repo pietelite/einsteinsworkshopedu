@@ -16,7 +16,7 @@ import me.pietelite.einsteinsworkshopedu.EWEDUPlugin;
 import me.pietelite.einsteinsworkshopedu.EinsteinsWorkshopCommand;
 
 @CommandAlias("einsteinsworkshop|ew")
-@Subcommand("freeze")
+@Subcommand("freeze|f")
 @Syntax("/ew freeze all|player")
 @CommandPermission("einsteinsworkshop.command.freeze")
 public class FreezeCommand extends EinsteinsWorkshopCommand {
@@ -32,10 +32,12 @@ public class FreezeCommand extends EinsteinsWorkshopCommand {
     @Subcommand("all|a")
     public void onFreezeAll(CommandSource source) {
     	Player sender = (Player) source;
-    	sender.sendMessage(Text.of(TextColors.GOLD, "Freezing... all"));
 		for (Player player : Sponge.getServer().getOnlinePlayers()) {
 			if (!player.hasPermission("einsteinsworkshop.freezeimmunity")) {
 				plugin.getFreezeManager().freeze(player);
+				sender.sendMessage(Text.of(TextColors.GOLD, "Froze ")
+		    			.concat(Text.of(TextColors.LIGHT_PURPLE, "all players"))
+		    			.concat(Text.of(TextColors.GOLD, ".")));
 				player.sendMessage(Text.of(TextColors.RED, "You have been frozen!"));
 			}
 		}

@@ -16,7 +16,7 @@ import me.pietelite.einsteinsworkshopedu.EWEDUPlugin;
 import me.pietelite.einsteinsworkshopedu.EinsteinsWorkshopCommand;
 
 @CommandAlias("einsteinsworkshop|ew")
-@Subcommand("unfreeze")
+@Subcommand("unfreeze|uf")
 @Syntax("/ew unfreeze all|player")
 @CommandPermission("einsteinsworkshop.command.unfreeze")
 public class UnfreezeCommand extends EinsteinsWorkshopCommand {
@@ -34,8 +34,8 @@ public class UnfreezeCommand extends EinsteinsWorkshopCommand {
     	Player sender = (Player) source;
     	sender.sendMessage(Text.of(TextColors.GOLD, "Unfreezing... all"));
 		for (Player player : Sponge.getServer().getOnlinePlayers()) {
-			plugin.getFreezeManager().freeze(player);
-			player.sendMessage(Text.of(TextColors.RED, "You have been unfrozen!"));
+			plugin.getFreezeManager().unfreeze(player);
+			player.sendMessage(Text.of(TextColors.GREEN, "You have been unfrozen!"));
 		}
     }
     
@@ -47,7 +47,7 @@ public class UnfreezeCommand extends EinsteinsWorkshopCommand {
 		for (Player onlinePlayer : Sponge.getServer().getOnlinePlayers()) {
 			if (onlinePlayer.getDisplayNameData().displayName().get().toPlain().equalsIgnoreCase(name)) {
 				plugin.getFreezeManager().unfreeze(onlinePlayer);
-				onlinePlayer.sendMessage(Text.of(TextColors.RED, "You have been unfrozen!"));
+				onlinePlayer.sendMessage(Text.of(TextColors.GREEN, "You have been unfrozen!"));
 			}
 		}
     }
