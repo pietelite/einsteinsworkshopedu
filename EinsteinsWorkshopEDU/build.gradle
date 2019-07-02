@@ -9,7 +9,30 @@
 plugins {
     // Apply the java-library plugin to add support for Java Library
     id 'java-library'
+    id 'java'
+	id 'com.github.johnrengelman.shadow' version '4.0.4'
+    id 'org.spongepowered.plugin' version '0.8.1'
 }
+
+apply plugin: 'java'
+apply plugin: 'idea'
+
+// In this section you declare where to find the dependencies of your project
+repositories {
+    mavenCentral()
+	maven {url = "https://repo.aikar.co/content/groups/aikar/"}
+    jcenter()
+    // Use jcenter for resolving your dependencies.
+    // You can declare any Maven/Ivy/file repository here.
+    google()
+}
+
+archivesBaseName = 'einsteinsworkshopedu' // Project Base Name Here
+group = 'me.pietelite' // This is a MinecraftOnline project
+version = '1.0' // Project Version
+
+ext.sponge_version = '7.0.0' // SpongeAPI version
+ext.authors = ['PietElite'] // Separate with commas (e.g. ['PietElite', 'Tristen'])
 
 dependencies {
     // This dependency is exported to consumers, that is to say found on their compile classpath.
@@ -20,11 +43,35 @@ dependencies {
 
     // Use JUnit test framework
     testImplementation 'junit:junit:4.12'
+    
+    compile 'co.aikar:acf-sponge:0.5.0-SNAPSHOT'
+    compileOnly "org.spongepowered:spongeapi:${sponge_version}"
 }
 
-// In this section you declare where to find the dependencies of your project
-repositories {
-    // Use jcenter for resolving your dependencies.
-    // You can declare any Maven/Ivy/file repository here.
-    jcenter()
+sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
+
+compileJava {
+    options.compilerArgs += ["-parameters"]
+}
+
+sponge.plugin.meta {
+    authors = ext.authors
+}
+
+artifacts {
+	archives shadowJar
+}
+
+jar {
+	classifier = "original"
+}
+
+shadowJar {
+	classifier null
+}
+
+jar.manifest {
+    attributes "Implementation-Title": name,
+            "Implementation-Version": version,
+            "Implementation-Vendor": "MinecraftOnline"
 }
