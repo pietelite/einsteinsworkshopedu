@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Implementation-Title: EinsteinsWorkshopEDU
+Implementation-Version: 1.0
+Implementation-Vendor: MinecraftOnline
+

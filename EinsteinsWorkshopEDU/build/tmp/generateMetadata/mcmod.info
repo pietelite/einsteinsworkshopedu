@@ -1,0 +1,22 @@
+[
+    {
+        "modid": "ewedu",
+        "name": "EinsteinsWorkshopEDU",
+        "version": "1.0",
+        "description": "Education Administratrive Tool",
+        "dependencies": [
+            "spongeapi@7.0.0"
+        ],
+        "requiredMods": [
+            "spongeapi@7.0.0"
+        ]
+    },
+    {
+        "modid": "einsteinsworkshopedu",
+        "name": "EinsteinsWorkshopEDU",
+        "version": "1.0",
+        "authorList": [
+            "PietElite"
+        ]
+    }
+]
