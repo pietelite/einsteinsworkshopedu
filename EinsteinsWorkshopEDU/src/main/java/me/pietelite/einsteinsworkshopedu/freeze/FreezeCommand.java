@@ -38,10 +38,10 @@ public class FreezeCommand extends EinsteinsWorkshopCommand {
 					player.sendMessage(Text.of(TextColors.AQUA, "You have been frozen!"));
 				}
 			}
-			sender.sendMessage(Text.of(TextColors.AQUA, "Froze ")
-	    			.concat(Text.of(TextColors.LIGHT_PURPLE, "all players"))
-	    			.concat(Text.of(TextColors.AQUA, ".")));
 		}
+		sender.sendMessage(Text.of(TextColors.AQUA, "Froze ")
+    			.concat(Text.of(TextColors.LIGHT_PURPLE, "all players"))
+    			.concat(Text.of(TextColors.AQUA, ".")));
     }
     
     @Subcommand("player|p")
