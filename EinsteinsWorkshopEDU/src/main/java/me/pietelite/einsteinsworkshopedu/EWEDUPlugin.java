@@ -3,9 +3,13 @@ import static me.pietelite.einsteinsworkshopedu.EWEDUPlugin.VERSION;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Scanner;
 
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
@@ -18,6 +22,8 @@ import org.spongepowered.api.event.action.InteractEvent;
 import org.spongepowered.api.event.entity.TargetEntityEvent;
 import org.spongepowered.api.event.game.GameReloadEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
+import org.spongepowered.api.event.item.inventory.TargetInventoryEvent;
+import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 
@@ -30,7 +36,9 @@ import me.pietelite.einsteinsworkshopedu.freeze.FreezeCommand;
 import me.pietelite.einsteinsworkshopedu.freeze.FreezeManager;
 import me.pietelite.einsteinsworkshopedu.freeze.UnfreezeCommand;
 import me.pietelite.einsteinsworkshopedu.listeners.InteractEventListener;
+import me.pietelite.einsteinsworkshopedu.listeners.LoginEventListener;
 import me.pietelite.einsteinsworkshopedu.listeners.TargetEntityEventListener;
+import me.pietelite.einsteinsworkshopedu.listeners.TargetInventoryEventListener;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
@@ -52,9 +60,11 @@ import ninja.leaping.configurate.loader.ConfigurationLoader;
 		name = "EinsteinsWorkshopEDU",
 		version = VERSION,
 		description = "Education Administratrive Tool")
-public class EWEDUPlugin {
+public class EWEDUPlugin implements PluginContainer {
 	
 	public static final String VERSION = "1.0";
+	
+	public static final String LOG_IN_MESSAGE_FILE_NAME = "log_in_message.txt";
 	
 	@Inject
     /** General logger. From Sponge API. */
@@ -82,6 +92,8 @@ public class EWEDUPlugin {
     private SpongeCommandManager commandManager;
     
     private FreezeManager freezeManager;
+    
+    private List<String> loginMessage;
 
     @Listener
     /**
@@ -93,6 +105,8 @@ public class EWEDUPlugin {
         logger.info("Initializing GriefAlert...");
         
         freezeManager = new FreezeManager(this);
+        
+        loginMessage = readLoginMessageFile(loadLoginMessageFile());
         
         // Load the config from the Sponge API and set the specific node values.
         initializeConfig();
@@ -160,6 +174,8 @@ public class EWEDUPlugin {
 	private void registerListeners() {
 		Sponge.getEventManager().registerListener(this, TargetEntityEvent.class, Order.LAST, new TargetEntityEventListener(this));
 		Sponge.getEventManager().registerListener(this, InteractEvent.class, Order.LAST, new InteractEventListener(this));
+		Sponge.getEventManager().registerListener(this, TargetInventoryEvent.class, Order.LAST, new TargetInventoryEventListener(this));
+		Sponge.getEventManager().registerListener(this, ClientConnectionEvent.Join.class, Order.LAST, new LoginEventListener(this));
 		
 	}	
 
@@ -178,8 +194,59 @@ public class EWEDUPlugin {
         logger.info("EinsteinsWorkshopEDU config data reloaded!");
     }
     
+    private File loadLoginMessageFile() {
+    	logger.info("Loading LoginMessage File");
+    	
+    	if (configDirectory.mkdir()) getLogger().info("Grief Alert Configuration directory created.");
+    	
+    	// Get the file
+    	Path filePath = Paths.get(configDirectory.getPath(), LOG_IN_MESSAGE_FILE_NAME);
+        
+        if (Files.notExists(filePath)) {
+        	getLogger().info("File doesn't exist yet! Trying to create as: " + filePath);
+            getAsset("default_log_in_message.txt").ifPresent(asset -> {
+				try {
+					asset.copyToFile(filePath, false);
+					getLogger().info(LOG_IN_MESSAGE_FILE_NAME + " created successfully.");
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			});
+        }
+		return filePath.toFile();
+    }
+    
+    private List<String> readLoginMessageFile(File file) {
+        try {
+            logger.info("Message being read...");
+            Scanner scanner = new Scanner(file);
+            List<String> lines = new LinkedList<String>();
+            while (scanner.hasNext()) {
+                lines.add(scanner.nextLine());
+            }
+            scanner.close();
+            return lines;
+        } catch (Exception e) {
+            logger.warn("Exception while loading", e);
+            return new LinkedList<String>();
+        }
+    }
+    
     public FreezeManager getFreezeManager() {
     	return freezeManager;
     }
+    
+    public Logger getLogger() {
+    	return logger;
+    }
+    
+    public List<String> getLoginMessage() {
+    	return loginMessage;
+    }
+
+	@Override
+	public String getId() {
+		return "ewedu";
+	}
 
 }

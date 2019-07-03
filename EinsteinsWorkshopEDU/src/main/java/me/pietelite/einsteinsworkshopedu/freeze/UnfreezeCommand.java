@@ -32,24 +32,35 @@ public class UnfreezeCommand extends EinsteinsWorkshopCommand {
     @Subcommand("all|a")
     public void onFreezeAll(CommandSource source) {
     	Player sender = (Player) source;
-    	sender.sendMessage(Text.of(TextColors.GOLD, "Unfreezing... all"));
 		for (Player player : Sponge.getServer().getOnlinePlayers()) {
-			plugin.getFreezeManager().unfreeze(player);
-			player.sendMessage(Text.of(TextColors.GREEN, "You have been unfrozen!"));
+			if (plugin.getFreezeManager().unfreeze(player)) {
+				player.sendMessage(Text.of(TextColors.GREEN, "You have been unfrozen!"));
+			}
 		}
+		sender.sendMessage(Text.of(TextColors.GREEN, "Unfroze ")
+    			.concat(Text.of(TextColors.LIGHT_PURPLE, "all players"))
+    			.concat(Text.of(TextColors.GREEN, ".")));
     }
     
     @Subcommand("player|p")
-    @CommandCompletion("players")
+    @CommandCompletion("@players")
     public void onFreezePlayer(CommandSource source, String name) {
     	Player sender = (Player) source;
-    	sender.sendMessage(Text.of(TextColors.GOLD, "Unfreezing... " + name));
 		for (Player onlinePlayer : Sponge.getServer().getOnlinePlayers()) {
 			if (onlinePlayer.getDisplayNameData().displayName().get().toPlain().equalsIgnoreCase(name)) {
-				plugin.getFreezeManager().unfreeze(onlinePlayer);
-				onlinePlayer.sendMessage(Text.of(TextColors.GREEN, "You have been unfrozen!"));
+				if (plugin.getFreezeManager().unfreeze(onlinePlayer)) {
+					sender.sendMessage(Text.of(TextColors.GREEN, "Unfroze ")
+			    			.concat(Text.of(TextColors.LIGHT_PURPLE, name))
+			    			.concat(Text.of(TextColors.GRAY, " (" + onlinePlayer.getName() + ")"))
+			    			.concat(Text.of(TextColors.GREEN, ".")));
+					onlinePlayer.sendMessage(Text.of(TextColors.GREEN, "You have been unfrozen!"));
+					return;
+				} else {
+					sender.sendMessage(Text.of(TextColors.RED, "That player wasn't frozen!"));
+				}
 			}
 		}
+		sender.sendMessage(Text.of(TextColors.RED, "No player was found with that name."));
     }
     
 }

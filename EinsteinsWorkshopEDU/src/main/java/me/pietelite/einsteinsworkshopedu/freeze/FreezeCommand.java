@@ -34,29 +34,37 @@ public class FreezeCommand extends EinsteinsWorkshopCommand {
     	Player sender = (Player) source;
 		for (Player player : Sponge.getServer().getOnlinePlayers()) {
 			if (!player.hasPermission("einsteinsworkshop.freezeimmunity")) {
-				plugin.getFreezeManager().freeze(player);
-				sender.sendMessage(Text.of(TextColors.GOLD, "Froze ")
-		    			.concat(Text.of(TextColors.LIGHT_PURPLE, "all players"))
-		    			.concat(Text.of(TextColors.GOLD, ".")));
-				player.sendMessage(Text.of(TextColors.RED, "You have been frozen!"));
+				if (plugin.getFreezeManager().freeze(player)) {
+					player.sendMessage(Text.of(TextColors.AQUA, "You have been frozen!"));
+				}
 			}
+			sender.sendMessage(Text.of(TextColors.AQUA, "Froze ")
+	    			.concat(Text.of(TextColors.LIGHT_PURPLE, "all players"))
+	    			.concat(Text.of(TextColors.AQUA, ".")));
 		}
     }
     
     @Subcommand("player|p")
-    @CommandCompletion("players")
+    @CommandCompletion("@players")
     public void onFreezePlayer(CommandSource source, String name) {
     	Player sender = (Player) source;
 		for (Player onlinePlayer : Sponge.getServer().getOnlinePlayers()) {
-			if (onlinePlayer.getDisplayNameData().displayName().get().toPlain().equalsIgnoreCase(name) &&
-					!onlinePlayer.hasPermission("einsteinsworkshop.freezeimmunity")) {
-				plugin.getFreezeManager().freeze(onlinePlayer);
-				sender.sendMessage(Text.of(TextColors.GOLD, "Froze ")
-		    			.concat(Text.of(TextColors.LIGHT_PURPLE, name))
-		    			.concat(Text.of(TextColors.GRAY, " (" + onlinePlayer.getName() + ")"))
-		    			.concat(Text.of(TextColors.GOLD, ".")));
-				onlinePlayer.sendMessage(Text.of(TextColors.RED, "You have been frozen!"));
+			if (onlinePlayer.getDisplayNameData().displayName().get().toPlain().equalsIgnoreCase(name)) {
+				if (!onlinePlayer.hasPermission("einsteinsworkshop.freezeimmunity")) {
+					if (plugin.getFreezeManager().freeze(onlinePlayer)) {
+						sender.sendMessage(Text.of(TextColors.AQUA, "Froze ")
+				    			.concat(Text.of(TextColors.LIGHT_PURPLE, name))
+				    			.concat(Text.of(TextColors.GRAY, " (" + onlinePlayer.getName() + ")"))
+				    			.concat(Text.of(TextColors.AQUA, ".")));
+						onlinePlayer.sendMessage(Text.of(TextColors.AQUA, "You have been frozen!"));
+					} else {
+						sender.sendMessage(Text.of(TextColors.RED, "That player is already frozen!"));
+					}
+				} else {
+					sender.sendMessage(Text.of(TextColors.RED, "This player cannot be frozen!"));
+				}
 				return;
+				
 			}
 		}
 		sender.sendMessage(Text.of(TextColors.RED, "No player was found with that name."));
