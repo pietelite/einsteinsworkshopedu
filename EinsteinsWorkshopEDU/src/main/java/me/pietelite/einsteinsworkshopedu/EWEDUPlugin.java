@@ -39,8 +39,6 @@ import me.pietelite.einsteinsworkshopedu.listeners.InteractEventListener;
 import me.pietelite.einsteinsworkshopedu.listeners.LoginEventListener;
 import me.pietelite.einsteinsworkshopedu.listeners.TargetEntityEventListener;
 import me.pietelite.einsteinsworkshopedu.listeners.TargetInventoryEventListener;
-import me.pietelite.einsteinsworkshopedu.nickname.NicknameCommand;
-import me.pietelite.einsteinsworkshopedu.nickname.NicknameManager;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
@@ -96,8 +94,6 @@ public class EWEDUPlugin implements PluginContainer {
     
     private FreezeManager freezeManager;
     
-    private NicknameManager nicknameManager;
-    
     private List<String> loginMessage;
 
     @Listener
@@ -110,7 +106,6 @@ public class EWEDUPlugin implements PluginContainer {
         logger.info("Initializing GriefAlert...");
         
         freezeManager = new FreezeManager(this);
-        nicknameManager = new NicknameManager(this);
         
         loginMessage = readLoginMessageFile(loadLoginMessageFile());
         
@@ -152,7 +147,6 @@ public class EWEDUPlugin implements PluginContainer {
     	commandManager.registerCommand(new EinsteinsWorkshopCommand(this));
     	commandManager.registerCommand(new FreezeCommand(this));
     	commandManager.registerCommand(new UnfreezeCommand(this));
-    	commandManager.registerCommand(new NicknameCommand(this));
     	registerConditions();
     	registerCompletions();
     }
@@ -241,10 +235,6 @@ public class EWEDUPlugin implements PluginContainer {
     
     public FreezeManager getFreezeManager() {
     	return freezeManager;
-    }
-    
-    public NicknameManager getNicknameManager() {
-    	return nicknameManager;
     }
     
     public Logger getLogger() {
