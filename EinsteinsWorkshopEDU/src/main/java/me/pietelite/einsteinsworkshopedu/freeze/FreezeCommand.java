@@ -6,7 +6,10 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.action.HoverAction;
+import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
+import org.spongepowered.api.text.action.HoverAction;
 
 import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandCompletion;
@@ -39,9 +42,7 @@ public class FreezeCommand extends EinsteinsWorkshopCommand {
 				}
 			}
 		}
-		sender.sendMessage(Text.of(TextColors.AQUA, "Froze ")
-    			.concat(Text.of(TextColors.LIGHT_PURPLE, "all players"))
-    			.concat(Text.of(TextColors.AQUA, ".")));
+		sender.sendMessage(Utils.createFreezeAllMessage(true));
     }
     
     @Subcommand("player|p")
@@ -52,10 +53,7 @@ public class FreezeCommand extends EinsteinsWorkshopCommand {
 			if (onlinePlayer.getDisplayNameData().displayName().get().toPlain().equalsIgnoreCase(name)) {
 				if (!onlinePlayer.hasPermission("einsteinsworkshop.freezeimmunity")) {
 					if (plugin.getFreezeManager().freeze(onlinePlayer)) {
-						sender.sendMessage(Text.of(TextColors.AQUA, "Froze ")
-				    			.concat(Text.of(TextColors.LIGHT_PURPLE, name))
-				    			.concat(Text.of(TextColors.GRAY, " (" + onlinePlayer.getName() + ")"))
-				    			.concat(Text.of(TextColors.AQUA, ".")));
+						sender.sendMessage(Utils.createFreezePlayerMessage(true, name));
 						onlinePlayer.sendMessage(Text.of(TextColors.AQUA, "You have been frozen!"));
 					} else {
 						sender.sendMessage(Text.of(TextColors.RED, "That player is already frozen!"));
