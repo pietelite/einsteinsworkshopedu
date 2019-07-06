@@ -263,7 +263,7 @@ public class EWEDUPlugin implements PluginContainer {
 	}
 
 	public File getDataDirectory() {
-		return new File(configDirectory.getParentFile().getPath() + DATA_FOLDER_NAME);
+		return new File(configDirectory.getParentFile().getParentFile().getPath() + "/" + DATA_FOLDER_NAME);
 	}
 
 }

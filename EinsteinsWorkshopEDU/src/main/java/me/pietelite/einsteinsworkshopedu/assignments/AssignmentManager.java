@@ -8,10 +8,6 @@ import java.nio.file.Paths;
 import java.util.LinkedList;
 import java.util.Scanner;
 
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColor;
-import org.spongepowered.api.text.format.TextColors;
-
 import me.pietelite.einsteinsworkshopedu.EWEDUPlugin;
 import me.pietelite.einsteinsworkshopedu.assignments.Assignment.BodyTooLongException;
 import me.pietelite.einsteinsworkshopedu.assignments.Assignment.TitleTooLongException;
@@ -25,9 +21,6 @@ public class AssignmentManager extends LinkedList<Assignment> {
 	
 	private static final String ASSIGNMENTS_FILE_NAME = "assignments.txt";
 	private static final String ASSIGNMENTS_DATA_REGEX = ";";
-	
-	private static final TextColor DEFAULT_TITLE_COLOR = TextColors.YELLOW;
-	private static final TextColor DEFAULT_BODY_COLOR = TextColors.WHITE;
 	
 	private EWEDUPlugin plugin;
 	
@@ -83,7 +76,7 @@ public class AssignmentManager extends LinkedList<Assignment> {
                 Assignment assignment;
                 try {
                 	// Try to generate the griefAction with the appropriate color
-                	assignment = createAssignment(splitLine);
+                	assignment = constructAssignment(splitLine);
                 } catch (IllegalArgumentException e) {
                 	plugin.getLogger().warn(ASSIGNMENTS_FILE_NAME + " - " + e.getMessage() + " @ Line: " + line);
                 	// Fatal error occurred with this line. Skipping line entirely.
@@ -100,12 +93,13 @@ public class AssignmentManager extends LinkedList<Assignment> {
         }
 	}
 
-	private Assignment createAssignment(String[] assignmentLine) throws IllegalArgumentException {
-		if (assignmentLine.length != 3) throw new IllegalArgumentException();
+	private Assignment constructAssignment(String[] assignmentLine) throws IllegalArgumentException {
+		if (assignmentLine.length != 4) throw new IllegalArgumentException();
 		try {
-			return new Assignment(assignmentLine[0])
-					.setTitle(Text.of(DEFAULT_TITLE_COLOR, assignmentLine[1]))
-					.setBody(Text.of(DEFAULT_BODY_COLOR, assignmentLine[2]));
+			return new Assignment(assignmentLine[0],
+					assignmentLine[1],
+					assignmentLine[2],
+					assignmentLine[3]);
 		} catch (BodyTooLongException | TitleTooLongException e) {
 			e.printStackTrace();
 			return null;
