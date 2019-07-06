@@ -37,9 +37,7 @@ public class UnfreezeCommand extends EinsteinsWorkshopCommand {
 				player.sendMessage(Text.of(TextColors.GREEN, "You have been unfrozen!"));
 			}
 		}
-		sender.sendMessage(Text.of(TextColors.GREEN, "Unfroze ")
-    			.concat(Text.of(TextColors.LIGHT_PURPLE, "all players"))
-    			.concat(Text.of(TextColors.GREEN, ".")));
+		sender.sendMessage(Utils.createFreezeAllMessage(false));
     }
     
     @Subcommand("player|p")
@@ -49,10 +47,7 @@ public class UnfreezeCommand extends EinsteinsWorkshopCommand {
 		for (Player onlinePlayer : Sponge.getServer().getOnlinePlayers()) {
 			if (onlinePlayer.getDisplayNameData().displayName().get().toPlain().equalsIgnoreCase(name)) {
 				if (plugin.getFreezeManager().unfreeze(onlinePlayer)) {
-					sender.sendMessage(Text.of(TextColors.GREEN, "Unfroze ")
-			    			.concat(Text.of(TextColors.LIGHT_PURPLE, name))
-			    			.concat(Text.of(TextColors.GRAY, " (" + onlinePlayer.getName() + ")"))
-			    			.concat(Text.of(TextColors.GREEN, ".")));
+					sender.sendMessage(Utils.createFreezePlayerMessage(false, name));
 					onlinePlayer.sendMessage(Text.of(TextColors.GREEN, "You have been unfrozen!"));
 					return;
 				} else {

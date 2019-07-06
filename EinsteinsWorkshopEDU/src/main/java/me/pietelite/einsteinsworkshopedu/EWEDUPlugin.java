@@ -32,6 +32,8 @@ import com.google.inject.Inject;
 import co.aikar.commands.ConditionFailedException;
 import co.aikar.commands.SpongeCommandIssuer;
 import co.aikar.commands.SpongeCommandManager;
+import me.pietelite.einsteinsworkshopedu.assignments.AssignmentCommand;
+import me.pietelite.einsteinsworkshopedu.assignments.AssignmentManager;
 import me.pietelite.einsteinsworkshopedu.freeze.FreezeCommand;
 import me.pietelite.einsteinsworkshopedu.freeze.FreezeManager;
 import me.pietelite.einsteinsworkshopedu.freeze.UnfreezeCommand;
@@ -67,6 +69,8 @@ public class EWEDUPlugin implements PluginContainer {
 	
 	public static final String LOG_IN_MESSAGE_FILE_NAME = "log_in_message.txt";
 	
+	public static final String DATA_FOLDER_NAME = "einsteinsworkshop";
+	
 	@Inject
     /** General logger. From Sponge API. */
     private Logger logger;
@@ -94,6 +98,8 @@ public class EWEDUPlugin implements PluginContainer {
     
     private FreezeManager freezeManager;
     
+    private AssignmentManager assignmentManager;
+    
     private List<String> loginMessage;
 
     @Listener
@@ -106,6 +112,7 @@ public class EWEDUPlugin implements PluginContainer {
         logger.info("Initializing GriefAlert...");
         
         freezeManager = new FreezeManager(this);
+        assignmentManager = new AssignmentManager(this);
         
         loginMessage = readLoginMessageFile(loadLoginMessageFile());
         
@@ -147,6 +154,7 @@ public class EWEDUPlugin implements PluginContainer {
     	commandManager.registerCommand(new EinsteinsWorkshopCommand(this));
     	commandManager.registerCommand(new FreezeCommand(this));
     	commandManager.registerCommand(new UnfreezeCommand(this));
+    	commandManager.registerCommand(new AssignmentCommand(this));
     	registerConditions();
     	registerCompletions();
     }
@@ -237,6 +245,10 @@ public class EWEDUPlugin implements PluginContainer {
     	return freezeManager;
     }
     
+    public AssignmentManager getAssignmentManager() {
+    	return assignmentManager;
+    }
+    
     public Logger getLogger() {
     	return logger;
     }
@@ -248,6 +260,10 @@ public class EWEDUPlugin implements PluginContainer {
 	@Override
 	public String getId() {
 		return "ewedu";
+	}
+
+	public File getDataDirectory() {
+		return new File(configDirectory.getParentFile().getPath() + DATA_FOLDER_NAME);
 	}
 
 }
