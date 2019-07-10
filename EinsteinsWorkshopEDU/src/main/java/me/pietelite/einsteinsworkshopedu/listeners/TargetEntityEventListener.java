@@ -31,7 +31,7 @@ public class TargetEntityEventListener implements EventListener<TargetEntityEven
 		Entity movingEntity = event.getTargetEntity();
 		if (movingEntity instanceof Player) {
 			Player movingPlayer = (Player) movingEntity;
-			if (plugin.getFreezeManager().isFrozen(movingPlayer)) {
+			if (plugin.getFreezeManager().getFrozenPlayers().contains(movingPlayer)) {
 				try {
 					((Cancellable) event).setCancelled(true);
 					return;

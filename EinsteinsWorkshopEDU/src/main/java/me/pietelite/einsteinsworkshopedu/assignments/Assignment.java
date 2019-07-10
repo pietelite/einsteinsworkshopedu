@@ -4,8 +4,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.UUID;
 
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColor;
@@ -29,7 +29,7 @@ public class Assignment {
 	private Date timestamp;
 	private String type;
 	
-	private List<UUID> playersCompleted = new LinkedList<UUID>();
+	private List<Player> playersCompleted = new LinkedList<Player>();
 	
 	public Assignment(String type, String title) throws TitleTooLongException, IllegalArgumentException {
 		this.setType(type.toUpperCase());
@@ -87,8 +87,16 @@ public class Assignment {
 		this.timestamp = date;
 	}
 	
-	public List<UUID> getPlayersCompleted() {
+	public List<Player> getPlayersCompleted() {
 		return this.playersCompleted;
+	}
+	
+	public String[] getPlayersCompletedNames() {
+		String[] output = new String[playersCompleted.size()];
+		for (int i = 0; i < playersCompleted.size(); i++) {
+			output[i] = playersCompleted.get(i).getName();
+		}
+		return output;
 	}
 
 	public String getType() {
@@ -108,6 +116,19 @@ public class Assignment {
 				.append(this.getCompletableTitle(id))
 				.append(Text.of(TextColors.GRAY, ": "))
 				.append(body)
+				.build();
+	}
+	
+	public Text formatReadableVerbose(int id) {
+		return Text.builder(String.valueOf(id) + ". ").color(TextColors.RED)
+				.append(Text.of(TextColors.GRAY, "[",
+						Text.of(TextColors.AQUA, TextStyles.ITALIC, type.toUpperCase()),
+						"] "))
+				.append(this.getCompletableTitle(id))
+				.append(Text.of(TextColors.GRAY, ": "))
+				.append(body)
+				.append(Text.of(TextColors.YELLOW, "\nLast Edited: ", TextColors.AQUA, timestamp.toString()))
+				.append(Text.of(TextColors.YELLOW, "\nCompleted By: ", TextColors.AQUA, String.join(", ", getPlayersCompletedNames())))
 				.build();
 	}
 	

@@ -37,11 +37,13 @@ public class FreezeCommand extends EinsteinsWorkshopCommand {
 		}
     	for (Player player : Sponge.getServer().getOnlinePlayers()) {
 			if (!player.hasPermission("einsteinsworkshop.freezeimmunity")) {
-				if (plugin.getFreezeManager().freeze(player)) {
+				if (!plugin.getFreezeManager().getFrozenPlayers().contains(player)) {
+					plugin.getFreezeManager().getFrozenPlayers().add(player);
 					player.sendMessage(Text.of(TextColors.AQUA, "You have been frozen!"));
 				}
 			}
 		}
+    	plugin.getFreezeManager().isAllFrozen = true;
 		source.sendMessage(Utils.createFreezeAllMessage(true));
     }
     
@@ -55,7 +57,8 @@ public class FreezeCommand extends EinsteinsWorkshopCommand {
     	for (Player onlinePlayer : Sponge.getServer().getOnlinePlayers()) {
 			if (onlinePlayer.getDisplayNameData().displayName().get().toPlain().equalsIgnoreCase(name)) {
 				if (!onlinePlayer.hasPermission("einsteinsworkshop.freezeimmunity")) {
-					if (plugin.getFreezeManager().freeze(onlinePlayer)) {
+					if (!plugin.getFreezeManager().getFrozenPlayers().contains(onlinePlayer)) {
+						plugin.getFreezeManager().getFrozenPlayers().add(onlinePlayer);
 						source.sendMessage(Utils.createFreezePlayerMessage(true, name));
 						onlinePlayer.sendMessage(Text.of(TextColors.AQUA, "You have been frozen!"));
 					} else {
@@ -65,7 +68,6 @@ public class FreezeCommand extends EinsteinsWorkshopCommand {
 					source.sendMessage(Text.of(TextColors.RED, "This player cannot be frozen!"));
 				}
 				return;
-				
 			}
 		}
 		source.sendMessage(Text.of(TextColors.RED, "No player was found with that name."));

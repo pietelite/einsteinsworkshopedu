@@ -35,6 +35,13 @@ public class LoginEventListener implements EventListener<ClientConnectionEvent.J
 		for (String line : plugin.getLoginMessage()) {
 			player.sendMessage(Text.of(line));
 		}
+		
+		if (plugin.getFreezeManager().isAllFrozen 
+				&& !plugin.getFreezeManager().getFrozenPlayers().contains(player)
+				&& !player.hasPermission("einsteinsworkshop.freezeimmunity")) {
+			plugin.getFreezeManager().getFrozenPlayers().add(player);
+			player.sendMessage(Text.of(TextColors.AQUA, "You have been frozen!"));
+		}
 	}
 
 }

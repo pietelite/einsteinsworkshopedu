@@ -25,6 +25,7 @@ import org.spongepowered.api.event.game.GameReloadEvent;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
 import org.spongepowered.api.event.item.inventory.TargetInventoryEvent;
+import org.spongepowered.api.event.message.MessageChannelEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
@@ -40,6 +41,7 @@ import me.pietelite.einsteinsworkshopedu.assignments.AssignmentManager;
 import me.pietelite.einsteinsworkshopedu.freeze.FreezeCommand;
 import me.pietelite.einsteinsworkshopedu.freeze.FreezeManager;
 import me.pietelite.einsteinsworkshopedu.freeze.UnfreezeCommand;
+import me.pietelite.einsteinsworkshopedu.listeners.ChatListener;
 import me.pietelite.einsteinsworkshopedu.listeners.InteractEventListener;
 import me.pietelite.einsteinsworkshopedu.listeners.LoginEventListener;
 import me.pietelite.einsteinsworkshopedu.listeners.TargetEntityEventListener;
@@ -224,7 +226,7 @@ public class EWEDUPlugin implements PluginContainer {
 		Sponge.getEventManager().registerListener(this, InteractEvent.class, Order.LAST, new InteractEventListener(this));
 		Sponge.getEventManager().registerListener(this, TargetInventoryEvent.class, Order.LAST, new TargetInventoryEventListener(this));
 		Sponge.getEventManager().registerListener(this, ClientConnectionEvent.Join.class, Order.LAST, new LoginEventListener(this));
-		
+		Sponge.getEventManager().registerListener(this, MessageChannelEvent.Chat.class, Order.LAST, new ChatListener(this));
 	}	
 
 	/**

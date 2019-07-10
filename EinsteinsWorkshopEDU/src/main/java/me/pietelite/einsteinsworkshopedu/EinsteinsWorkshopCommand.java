@@ -47,6 +47,8 @@ public class EinsteinsWorkshopCommand extends BaseCommand {
     		player.sendMessage(Text.of(TextColors.AQUA, "/ew assignment complete <id>"));
     	if (player.hasPermission("einsteinsworkshop.command.assignment.edit"))
     		player.sendMessage(Text.of(TextColors.AQUA, "/ew assignment edit <title|body|type> <id> <value>"));
+    	if (player.hasPermission("einsteinsworkshop.command.assignment.info"))
+    		player.sendMessage(Text.of(TextColors.AQUA, "/ew assignment info <id>"));
     	
     }
 }

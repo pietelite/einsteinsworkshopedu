@@ -20,7 +20,7 @@ public class TargetInventoryEventListener implements EventListener<TargetInvento
 		Object root = event.getCause().root();
 		if (root instanceof Player) {
 			Player movingPlayer = (Player) root;
-			if (plugin.getFreezeManager().isFrozen(movingPlayer)) {
+			if (plugin.getFreezeManager().getFrozenPlayers().contains(movingPlayer)) {
 				try {
 					((Cancellable) event).setCancelled(true);
 					return;

@@ -1,7 +1,6 @@
 package me.pietelite.einsteinsworkshopedu.assignments;
 
 import java.util.Date;
-import java.util.UUID;
 
 import javax.annotation.Syntax;
 
@@ -46,7 +45,7 @@ public class AssignmentCommand extends EinsteinsWorkshopCommand {
 		source.sendMessage(Text.of(TextColors.GOLD, "-- All Assignments --"));
 		for (int i = 0; i < plugin.getAssignmentManager().size(); i++) {
 			Assignment assignment = plugin.getAssignmentManager().get(i);
-			if ((source instanceof Player) && assignment.getPlayersCompleted().contains(((Player) source).getUniqueId())) {
+			if ((source instanceof Player) && assignment.getPlayersCompleted().contains((Player) source)) {
 				source.sendMessage(Text.of(TextStyles.STRIKETHROUGH, assignment.formatReadable(i + 1)));
 			} else {
 				source.sendMessage(plugin.getAssignmentManager().get(i).formatReadable(i + 1));
@@ -65,15 +64,14 @@ public class AssignmentCommand extends EinsteinsWorkshopCommand {
 		Player player = (Player) source;
 		try {
 			Assignment assignment = plugin.getAssignmentManager().get(id - 1);
-			UUID playerID = player.getUniqueId();
-			if (assignment.getPlayersCompleted().contains(playerID)) {
-				assignment.getPlayersCompleted().remove(playerID);
+			if (assignment.getPlayersCompleted().contains(player)) {
+				assignment.getPlayersCompleted().remove(player);
 				player.sendMessage(Text.of(TextColors.GREEN, "You have marked this assignment '", 
 						Text.of(TextColors.YELLOW, TextStyles.BOLD, "UNCOMPLETE"),
 						"'!"));
 				
 			} else {
-				assignment.getPlayersCompleted().add(player.getUniqueId());
+				assignment.getPlayersCompleted().add(player);
 				player.sendMessage(Text.of(TextColors.GREEN, "You have marked this assignment '", 
 						Text.of(TextColors.GREEN, TextStyles.BOLD, "COMPLETE"),
 						"'!"));
@@ -109,6 +107,20 @@ public class AssignmentCommand extends EinsteinsWorkshopCommand {
 			source.sendMessage(Text.of(TextColors.RED, "Titles can only be ", 
 											Text.of(TextColors.GOLD, Assignment.MAXIMUM_TITLE_LENGTH),
 											" characters long."));
+		}
+	}
+	
+	@Subcommand("info")
+	@CommandPermission("einsteinsworkshop.command.assignment.info")
+	public void onInfo(CommandSource source, int id) {
+		if (!plugin.isAssignmentsEnabled) {
+			source.sendMessage(Text.of(TextColors.RED, "This feature has been disabled."));
+			return;
+		}
+		try {
+			source.sendMessage(plugin.getAssignmentManager().get(id - 1).formatReadableVerbose(id));
+		} catch (IndexOutOfBoundsException e) {
+			source.sendMessage(Text.of(TextColors.RED, "There is no assignment with that id."));
 		}
 	}
 	
