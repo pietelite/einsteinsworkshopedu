@@ -31,37 +31,43 @@ public class FreezeCommand extends EinsteinsWorkshopCommand {
     
     @Subcommand("all|a")
     public void onFreezeAll(CommandSource source) {
-    	Player sender = (Player) source;
-		for (Player player : Sponge.getServer().getOnlinePlayers()) {
+    	if (!plugin.isFreezeEnabled) {
+			source.sendMessage(Text.of(TextColors.RED, "This feature has been disabled."));
+			return;
+		}
+    	for (Player player : Sponge.getServer().getOnlinePlayers()) {
 			if (!player.hasPermission("einsteinsworkshop.freezeimmunity")) {
 				if (plugin.getFreezeManager().freeze(player)) {
 					player.sendMessage(Text.of(TextColors.AQUA, "You have been frozen!"));
 				}
 			}
 		}
-		sender.sendMessage(Utils.createFreezeAllMessage(true));
+		source.sendMessage(Utils.createFreezeAllMessage(true));
     }
     
     @Subcommand("player|p")
     @CommandCompletion("@players")
     public void onFreezePlayer(CommandSource source, String name) {
-    	Player sender = (Player) source;
-		for (Player onlinePlayer : Sponge.getServer().getOnlinePlayers()) {
+    	if (!plugin.isFreezeEnabled) {
+			source.sendMessage(Text.of(TextColors.RED, "This feature has been disabled."));
+			return;
+		}
+    	for (Player onlinePlayer : Sponge.getServer().getOnlinePlayers()) {
 			if (onlinePlayer.getDisplayNameData().displayName().get().toPlain().equalsIgnoreCase(name)) {
 				if (!onlinePlayer.hasPermission("einsteinsworkshop.freezeimmunity")) {
 					if (plugin.getFreezeManager().freeze(onlinePlayer)) {
-						sender.sendMessage(Utils.createFreezePlayerMessage(true, name));
+						source.sendMessage(Utils.createFreezePlayerMessage(true, name));
 						onlinePlayer.sendMessage(Text.of(TextColors.AQUA, "You have been frozen!"));
 					} else {
-						sender.sendMessage(Text.of(TextColors.RED, "That player is already frozen!"));
+						source.sendMessage(Text.of(TextColors.RED, "That player is already frozen!"));
 					}
 				} else {
-					sender.sendMessage(Text.of(TextColors.RED, "This player cannot be frozen!"));
+					source.sendMessage(Text.of(TextColors.RED, "This player cannot be frozen!"));
 				}
 				return;
 				
 			}
 		}
-		sender.sendMessage(Text.of(TextColors.RED, "No player was found with that name."));
+		source.sendMessage(Text.of(TextColors.RED, "No player was found with that name."));
     }
 }

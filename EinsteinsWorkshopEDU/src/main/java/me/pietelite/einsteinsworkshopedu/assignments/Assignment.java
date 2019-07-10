@@ -1,8 +1,13 @@
 package me.pietelite.einsteinsworkshopedu.assignments;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.UUID;
 
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColor;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyles;
@@ -12,22 +17,23 @@ public class Assignment {
 	public static final int MAXIMUM_TITLE_LENGTH = 30;
 	public static final int MAXIMUM_BODY_LENGTH = 200;
 	
-	private static final TextColor DEFAULT_TITLE_COLOR = TextColors.YELLOW;
+	private static final TextColor DEFAULT_TITLE_COLOR = TextColors.RED;
 	private static final TextColor DEFAULT_BODY_COLOR = TextColors.WHITE;
+	
+	public static final List<String> DEFAULT_ASSIGNMENT_TYPES = Arrays.asList("lesson", "challenge");
+	
+	public static final String DATA_REGEX = ";";
 	
 	private Text title = Text.EMPTY;
 	private Text body = Text.EMPTY;
 	private Date timestamp;
-	private AssignmentType type;
+	private String type;
 	
-	public enum AssignmentType {
-		LESSON,
-		CHALLENGE
-	}
+	private List<UUID> playersCompleted = new LinkedList<UUID>();
 	
 	public Assignment(String type, String title) throws TitleTooLongException, IllegalArgumentException {
 		this.setType(type.toUpperCase());
-		this.setTitle(Text.of(DEFAULT_TITLE_COLOR, title));
+		this.setTitle(title);
 		this.timestamp = new Date();
 	}
 	
@@ -40,14 +46,24 @@ public class Assignment {
 	public Text getTitle() {
 		return title;
 	}
+	
+	public Text getCompletableTitle(int id) {
+		return Text.builder(title, title.toPlain())
+				.onHover(TextActions.showText(Text.of(TextColors.LIGHT_PURPLE, "Click here to toggle completion of this assignment")))
+				.onClick(TextActions.runCommand("/einsteinsworkshop assignment complete " + id))
+				.build();
+	}
 
 	public void setTitle(Text title) throws TitleTooLongException {
 		if (title.toPlain().length() > MAXIMUM_TITLE_LENGTH) throw new TitleTooLongException();
 		this.title = title;
 	}
-	
 	public void setTitle(String title) throws TitleTooLongException {
-		setTitle(Text.of(DEFAULT_TITLE_COLOR, title));
+		setTitle(Text.builder(title)
+					.color(DEFAULT_TITLE_COLOR)
+					.style(TextStyles.UNDERLINE)
+					.build()
+					);
 	}
 
 	public Text getBody() {
@@ -70,25 +86,37 @@ public class Assignment {
 	public void setTimestamp(Date date) {
 		this.timestamp = date;
 	}
+	
+	public List<UUID> getPlayersCompleted() {
+		return this.playersCompleted;
+	}
 
-	public AssignmentType getType() {
+	public String getType() {
 		return type;
 	}
 
 	public Assignment setType(String type) throws IllegalArgumentException {
-		this.type = AssignmentType.valueOf(type.toUpperCase());
+		this.type = type.toLowerCase();
 		return this;
 	}
 	
-	public Text readable(int id) {
+	public Text formatReadable(int id) {
 		return Text.builder(String.valueOf(id) + ". ").color(TextColors.RED)
 				.append(Text.of(TextColors.GRAY, "[",
-						Text.of(TextColors.AQUA, TextStyles.ITALIC, type.toString()),
+						Text.of(TextColors.AQUA, TextStyles.ITALIC, type.toUpperCase()),
 						"] "))
-				.append(title)
+				.append(this.getCompletableTitle(id))
 				.append(Text.of(TextColors.GRAY, ": "))
 				.append(body)
 				.build();
+	}
+	
+	public String formatData() {
+		return String.join(DATA_REGEX,
+				type,
+				title.toPlain(),
+				body.toPlain(),
+				String.valueOf(timestamp.getTime()));
 	}
 	
 	public final class TitleTooLongException extends Exception {

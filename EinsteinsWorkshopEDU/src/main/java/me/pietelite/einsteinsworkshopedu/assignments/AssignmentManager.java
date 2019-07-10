@@ -1,7 +1,9 @@
 package me.pietelite.einsteinsworkshopedu.assignments;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -20,30 +22,31 @@ public class AssignmentManager extends LinkedList<Assignment> {
 	private static final long serialVersionUID = 6610090706659987093L;
 	
 	private static final String ASSIGNMENTS_FILE_NAME = "assignments.txt";
-	private static final String ASSIGNMENTS_DATA_REGEX = ";";
+	
+	private File assignmentFile;
 	
 	private EWEDUPlugin plugin;
 	
 	public AssignmentManager(EWEDUPlugin plugin) {
 		super();
 		this.plugin = plugin;
-		readAssignmentFile(loadAssignmentFile());
+		readAssignmentFile(assignmentFile = loadAssignmentFile(false));
 	}
 
-	private File loadAssignmentFile() {
-		plugin.getLogger().info("Loading GriefAlert file: " + ASSIGNMENTS_FILE_NAME + " ...");
+	private File loadAssignmentFile(boolean overwrite) {
+		plugin.getLogger().info("Loading Assignment File (" + ASSIGNMENTS_FILE_NAME + ") ...");
     	
 		File dataFolder = plugin.getDataDirectory();
-    	if (dataFolder.mkdir()) plugin.getLogger().info("Grief Alert Configuration directory created.");
+    	if (dataFolder.mkdir()) plugin.getLogger().info("Einsteins Workshop data directory created.");
     	
     	// Get the file
     	Path griefAlertFilePath = Paths.get(dataFolder.getPath(), ASSIGNMENTS_FILE_NAME);
         
-        if (Files.notExists(griefAlertFilePath)) {
+        if (Files.notExists(griefAlertFilePath) || overwrite) {
         	plugin.getLogger().info("File doesn't exist yet! Trying to create as: " + ASSIGNMENTS_FILE_NAME);
             plugin.getAsset("default_assignments.txt").ifPresent(asset -> {
 				try {
-					asset.copyToFile(griefAlertFilePath, false);
+					asset.copyToFile(griefAlertFilePath, overwrite);
 					plugin.getLogger().info(ASSIGNMENTS_FILE_NAME + " created successfully.");
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -55,7 +58,7 @@ public class AssignmentManager extends LinkedList<Assignment> {
 	
 	private boolean readAssignmentFile(File file) {
 		try {
-            plugin.getLogger().info("Bring assignments into the server...");
+            plugin.getLogger().info("Processing Assignments...");
             Scanner scanner = new Scanner(file);
             String[] splitLine;
             String line;
@@ -71,21 +74,22 @@ public class AssignmentManager extends LinkedList<Assignment> {
                 String[] tokens = line.split("#");
                 line = tokens[0];
                 
-                splitLine = line.split(ASSIGNMENTS_DATA_REGEX);
+                splitLine = line.split(Assignment.DATA_REGEX);
                 
                 Assignment assignment;
                 try {
                 	// Try to generate the griefAction with the appropriate color
-                	assignment = constructAssignment(splitLine);
+                	assignment = constructAssignmentFromStorage(splitLine);
                 } catch (IllegalArgumentException e) {
-                	plugin.getLogger().warn(ASSIGNMENTS_FILE_NAME + " - " + e.getMessage() + " @ Line: " + line);
+                	plugin.getLogger().warn("Error in " + ASSIGNMENTS_FILE_NAME + " with line [" + line + "]");
+                	plugin.getLogger().warn(e.getMessage());
                 	// Fatal error occurred with this line. Skipping line entirely.
                 	continue;
                 }
                 this.add(assignment);
             }
             scanner.close();
-            plugin.getLogger().info("Assignments processed!");
+            plugin.getLogger().info("Assignments Processed");
             return true;
         } catch (Exception e) {
             plugin.getLogger().warn("Exception while reading " + ASSIGNMENTS_FILE_NAME, e);
@@ -93,17 +97,44 @@ public class AssignmentManager extends LinkedList<Assignment> {
         }
 	}
 
-	private Assignment constructAssignment(String[] assignmentLine) throws IllegalArgumentException {
-		if (assignmentLine.length != 4) throw new IllegalArgumentException();
+	private Assignment constructAssignmentFromStorage(String[] assignmentLine) throws IllegalArgumentException {
+		if (assignmentLine.length != 4) throw new IllegalArgumentException("Assignment line needs to have 4 arguments. "
+				+ "It has " + assignmentLine.length + ". Skipping Line.");
 		try {
 			return new Assignment(assignmentLine[0],
-					assignmentLine[1],
-					assignmentLine[2],
-					assignmentLine[3]);
+					assignmentLine[3], // Time
+					assignmentLine[1], // Title
+					assignmentLine[2]); // Body
 		} catch (BodyTooLongException | TitleTooLongException e) {
 			e.printStackTrace();
 			return null;
 		}
 	}
-
+	
+	public boolean writeToFile() {
+		if (!assignmentFile.exists()) {
+			return false;
+		}
+		assignmentFile = loadAssignmentFile(true);
+		OutputStream outputStream = null;
+		try {
+			outputStream = new FileOutputStream(assignmentFile, true);
+			for (Assignment assignment : this) {
+				String line = "\n" + assignment.formatData();
+				outputStream.write(line.getBytes(), 0, line.length());
+			}
+			return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            try {
+            	outputStream.close();
+            	readAssignmentFile(assignmentFile);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
+        }
+	}
 }

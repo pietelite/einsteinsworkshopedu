@@ -1,5 +1,6 @@
 package me.pietelite.einsteinsworkshopedu;
 import static me.pietelite.einsteinsworkshopedu.EWEDUPlugin.VERSION;
+import static me.pietelite.einsteinsworkshopedu.EWEDUPlugin.ID;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,7 +22,8 @@ import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.action.InteractEvent;
 import org.spongepowered.api.event.entity.TargetEntityEvent;
 import org.spongepowered.api.event.game.GameReloadEvent;
-import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
+import org.spongepowered.api.event.game.state.GameInitializationEvent;
+import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
 import org.spongepowered.api.event.item.inventory.TargetInventoryEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.plugin.Plugin;
@@ -32,6 +34,7 @@ import com.google.inject.Inject;
 import co.aikar.commands.ConditionFailedException;
 import co.aikar.commands.SpongeCommandIssuer;
 import co.aikar.commands.SpongeCommandManager;
+import me.pietelite.einsteinsworkshopedu.assignments.Assignment;
 import me.pietelite.einsteinsworkshopedu.assignments.AssignmentCommand;
 import me.pietelite.einsteinsworkshopedu.assignments.AssignmentManager;
 import me.pietelite.einsteinsworkshopedu.freeze.FreezeCommand;
@@ -59,13 +62,14 @@ import ninja.leaping.configurate.loader.ConfigurationLoader;
  * <li><i>einsteinsworkshop.command.nickname</i>: Allows the use of the /einsteinsworkshop nickname command</li>
  * <li><i>einsteinsworkshop.freezeimmunity</i>: Makes the player immune to freezing</i>
  */
-@Plugin(id = "ewedu",
+@Plugin(id = ID,
 		name = "EinsteinsWorkshopEDU",
 		version = VERSION,
 		description = "Education Administratrive Tool")
 public class EWEDUPlugin implements PluginContainer {
 	
 	public static final String VERSION = "1.0";
+	public static final String ID = "ewedu";
 	
 	public static final String LOG_IN_MESSAGE_FILE_NAME = "log_in_message.txt";
 	
@@ -101,6 +105,10 @@ public class EWEDUPlugin implements PluginContainer {
     private AssignmentManager assignmentManager;
     
     private List<String> loginMessage;
+    
+    public boolean isFreezeEnabled;
+    public boolean isAssignmentsEnabled;
+    private static List<String> assignmentTypes;
 
     @Listener
     /**
@@ -108,8 +116,8 @@ public class EWEDUPlugin implements PluginContainer {
      * All classes that other classes depend on must be initialized here.
      * @param event the event run before the game starts
      */
-    public void initialize(GamePreInitializationEvent event) {
-        logger.info("Initializing GriefAlert...");
+    public void onInitialize(GameInitializationEvent event) {
+        logger.info("Initializing EinsteinsWorkshopEdu...");
         
         freezeManager = new FreezeManager(this);
         assignmentManager = new AssignmentManager(this);
@@ -118,6 +126,7 @@ public class EWEDUPlugin implements PluginContainer {
         
         // Load the config from the Sponge API and set the specific node values.
         initializeConfig();
+        loadConfig();
         
         // Classes which other classes depend on must be initialized here. 
         
@@ -125,25 +134,47 @@ public class EWEDUPlugin implements PluginContainer {
         registerListeners();
         
         // Register all the commands with Sponge
-        registerCommands();
-       
+        registerCommands(); 
+    }
+    
+    @Listener
+    public void onStop(GameStoppingServerEvent event) {
+    	getAssignmentManager().writeToFile();
     }
 
 	private void initializeConfig() {
     	if (!defaultConfig.toFile().exists()) {
-            logger.info("Generating new Configuration File...");
+            logger.info("Generating New Configuration File...");
             try {
                 rootNode = configManager.load();
                 ConfigurationNode featureNode = rootNode.getNode("features");
-                featureNode.getNode("freeze_students").setValue(true);
+                featureNode.getNode("freeze_students").getNode("enabled").setValue(true);
+                featureNode.getNode("assignments").getNode("enabled").setValue(true);
+                featureNode.getNode("assignments").getNode("types").setValue(Assignment.DEFAULT_ASSIGNMENT_TYPES);
                 configManager.save(rootNode);
                 logger.info("New Configuration File created successfully!");
             } catch (IOException e) {
                 logger.warn("Exception while reading configuration", e);
             }
-        } else {
-        	logger.info("Configuration file already exists. Not creating.");
         }
+	}
+	
+	private void loadConfig() {
+        try {
+        	rootNode = configManager.load();
+            ConfigurationNode featureNode = rootNode.getNode("features");
+			isFreezeEnabled = featureNode.getNode("freeze_students").getNode("enabled").getBoolean();
+			isAssignmentsEnabled = featureNode.getNode("assignments").getNode("enabled").getBoolean();
+			assignmentTypes = featureNode.getNode("assignments").getNode("types").getList((object) -> {
+				if (object == null) {
+					return null;
+				} else {
+					return object.toString();}
+				});
+			getLogger().info("List of Valid Assignment Types: " + assignmentTypes.toString());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
     
 	@SuppressWarnings("deprecation")
@@ -171,12 +202,20 @@ public class EWEDUPlugin implements PluginContainer {
     
     private void registerCompletions() {
     	commandManager.getCommandCompletions().registerCompletion("players", c -> {
-    			List<String> onlinePlayerNames = new ArrayList<String>();
-    			for (Player player : Sponge.getServer().getOnlinePlayers()) {
-    				onlinePlayerNames.add(player.getName());
-    			}
-    			return onlinePlayerNames;
-    		});
+			List<String> onlinePlayerNames = new ArrayList<String>();
+			for (Player player : Sponge.getServer().getOnlinePlayers()) {
+				onlinePlayerNames.add(player.getName());
+			}
+			return onlinePlayerNames;
+		});
+    	commandManager.getCommandCompletions().registerCompletion("assignment_types", c -> {
+    		try {
+    			return EWEDUPlugin.getAssignmentTypes();
+    		} catch (Exception e) {
+    			e.printStackTrace();
+    			return new LinkedList<String>();
+    		}
+    	});
     }
 
 
@@ -204,19 +243,19 @@ public class EWEDUPlugin implements PluginContainer {
     }
     
     private File loadLoginMessageFile() {
-    	logger.info("Loading LoginMessage File");
+    	logger.info("Loading Login Message File");
     	
-    	if (configDirectory.mkdir()) getLogger().info("Grief Alert Configuration directory created.");
+    	if (configDirectory.mkdir()) getLogger().info("EinsteinsWorkshopEDU Configuration Directory Created");
     	
     	// Get the file
     	Path filePath = Paths.get(configDirectory.getPath(), LOG_IN_MESSAGE_FILE_NAME);
         
         if (Files.notExists(filePath)) {
-        	getLogger().info("File doesn't exist yet! Trying to create as: " + filePath);
+        	getLogger().info("File doesn't exist yet! Trying to create as '" + filePath + "'");
             getAsset("default_log_in_message.txt").ifPresent(asset -> {
 				try {
 					asset.copyToFile(filePath, false);
-					getLogger().info(LOG_IN_MESSAGE_FILE_NAME + " created successfully.");
+					getLogger().info("'" + LOG_IN_MESSAGE_FILE_NAME + "' created successfully.");
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -227,13 +266,13 @@ public class EWEDUPlugin implements PluginContainer {
     
     private List<String> readLoginMessageFile(File file) {
         try {
-            logger.info("Message being read...");
             Scanner scanner = new Scanner(file);
             List<String> lines = new LinkedList<String>();
             while (scanner.hasNext()) {
                 lines.add(scanner.nextLine());
             }
             scanner.close();
+            logger.info("Login Message Read");
             return lines;
         } catch (Exception e) {
             logger.warn("Exception while loading", e);
@@ -264,6 +303,10 @@ public class EWEDUPlugin implements PluginContainer {
 
 	public File getDataDirectory() {
 		return new File(configDirectory.getParentFile().getParentFile().getPath() + "/" + DATA_FOLDER_NAME);
+	}
+	
+	public static List<String> getAssignmentTypes() {
+		return assignmentTypes;
 	}
 
 }
