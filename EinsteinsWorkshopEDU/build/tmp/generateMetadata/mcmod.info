@@ -3,7 +3,7 @@
         "modid": "ewedu",
         "name": "EinsteinsWorkshopEDU",
         "version": "1.0",
-        "description": "Education Administratrive Tool",
+        "description": "Education Administrative Tool",
         "dependencies": [
             "spongeapi@7.0.0"
         ],

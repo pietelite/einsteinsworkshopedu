@@ -12,6 +12,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 
+import me.pietelite.einsteinsworkshopedu.features.FeatureManager;
+import me.pietelite.einsteinsworkshopedu.features.boxes.BoxCommand;
+import me.pietelite.einsteinsworkshopedu.features.boxes.BoxManager;
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.config.ConfigDir;
@@ -35,12 +38,12 @@ import com.google.inject.Inject;
 import co.aikar.commands.ConditionFailedException;
 import co.aikar.commands.SpongeCommandIssuer;
 import co.aikar.commands.SpongeCommandManager;
-import me.pietelite.einsteinsworkshopedu.assignments.Assignment;
-import me.pietelite.einsteinsworkshopedu.assignments.AssignmentCommand;
-import me.pietelite.einsteinsworkshopedu.assignments.AssignmentManager;
-import me.pietelite.einsteinsworkshopedu.freeze.FreezeCommand;
-import me.pietelite.einsteinsworkshopedu.freeze.FreezeManager;
-import me.pietelite.einsteinsworkshopedu.freeze.UnfreezeCommand;
+import me.pietelite.einsteinsworkshopedu.features.assignments.Assignment;
+import me.pietelite.einsteinsworkshopedu.features.assignments.AssignmentCommand;
+import me.pietelite.einsteinsworkshopedu.features.assignments.AssignmentManager;
+import me.pietelite.einsteinsworkshopedu.features.freeze.FreezeCommand;
+import me.pietelite.einsteinsworkshopedu.features.freeze.FreezeManager;
+import me.pietelite.einsteinsworkshopedu.features.freeze.UnfreezeCommand;
 import me.pietelite.einsteinsworkshopedu.listeners.ChatListener;
 import me.pietelite.einsteinsworkshopedu.listeners.InteractEventListener;
 import me.pietelite.einsteinsworkshopedu.listeners.LoginEventListener;
@@ -67,7 +70,7 @@ import ninja.leaping.configurate.loader.ConfigurationLoader;
 @Plugin(id = ID,
 		name = "EinsteinsWorkshopEDU",
 		version = VERSION,
-		description = "Education Administratrive Tool")
+		description = "Education Administrative Tool")
 public class EWEDUPlugin implements PluginContainer {
 	
 	public static final String VERSION = "1.0";
@@ -101,15 +104,15 @@ public class EWEDUPlugin implements PluginContainer {
     private PluginContainer container;
     
     private SpongeCommandManager commandManager;
-    
+
+    private FeatureManager featureManager;
+
     private FreezeManager freezeManager;
-    
     private AssignmentManager assignmentManager;
+    private BoxManager boxManager;
     
     private List<String> loginMessage;
-    
-    public boolean isFreezeEnabled;
-    public boolean isAssignmentsEnabled;
+
     private static List<String> assignmentTypes;
 
     @Listener
@@ -120,9 +123,11 @@ public class EWEDUPlugin implements PluginContainer {
      */
     public void onInitialize(GameInitializationEvent event) {
         logger.info("Initializing EinsteinsWorkshopEdu...");
-        
+
+        featureManager = new FeatureManager(this);
         freezeManager = new FreezeManager(this);
         assignmentManager = new AssignmentManager(this);
+        boxManager = new BoxManager(this);
         
         loginMessage = readLoginMessageFile(loadLoginMessageFile());
         
@@ -150,8 +155,9 @@ public class EWEDUPlugin implements PluginContainer {
             try {
                 rootNode = configManager.load();
                 ConfigurationNode featureNode = rootNode.getNode("features");
-                featureNode.getNode("freeze_students").getNode("enabled").setValue(true);
-                featureNode.getNode("assignments").getNode("enabled").setValue(true);
+				for (FeatureManager.Feature feature : featureManager.getFeatures()) {
+					featureNode.getNode(feature.name).getNode("enabled").setValue(true);
+				}
                 featureNode.getNode("assignments").getNode("types").setValue(Assignment.DEFAULT_ASSIGNMENT_TYPES);
                 configManager.save(rootNode);
                 logger.info("New Configuration File created successfully!");
@@ -165,8 +171,9 @@ public class EWEDUPlugin implements PluginContainer {
         try {
         	rootNode = configManager.load();
             ConfigurationNode featureNode = rootNode.getNode("features");
-			isFreezeEnabled = featureNode.getNode("freeze_students").getNode("enabled").getBoolean();
-			isAssignmentsEnabled = featureNode.getNode("assignments").getNode("enabled").getBoolean();
+			for (FeatureManager.Feature feature : featureManager.getFeatures()) {
+				feature.isEnabled = featureNode.getNode(feature.name).getNode("enabled").getBoolean();
+			}
 			assignmentTypes = featureNode.getNode("assignments").getNode("types").getList((object) -> {
 				if (object == null) {
 					return null;
@@ -188,6 +195,7 @@ public class EWEDUPlugin implements PluginContainer {
     	commandManager.registerCommand(new FreezeCommand(this));
     	commandManager.registerCommand(new UnfreezeCommand(this));
     	commandManager.registerCommand(new AssignmentCommand(this));
+    	commandManager.registerCommand(new BoxCommand(this));
     	registerConditions();
     	registerCompletions();
     }
@@ -204,7 +212,7 @@ public class EWEDUPlugin implements PluginContainer {
     
     private void registerCompletions() {
     	commandManager.getCommandCompletions().registerCompletion("players", c -> {
-			List<String> onlinePlayerNames = new ArrayList<String>();
+			List<String> onlinePlayerNames = new ArrayList<>();
 			for (Player player : Sponge.getServer().getOnlinePlayers()) {
 				onlinePlayerNames.add(player.getName());
 			}
@@ -215,7 +223,7 @@ public class EWEDUPlugin implements PluginContainer {
     			return EWEDUPlugin.getAssignmentTypes();
     		} catch (Exception e) {
     			e.printStackTrace();
-    			return new LinkedList<String>();
+    			return new LinkedList<>();
     		}
     	});
     }
@@ -281,7 +289,11 @@ public class EWEDUPlugin implements PluginContainer {
             return new LinkedList<String>();
         }
     }
-    
+
+    public FeatureManager getFeatureManager() {
+    	return featureManager;
+	}
+
     public FreezeManager getFreezeManager() {
     	return freezeManager;
     }
@@ -289,6 +301,10 @@ public class EWEDUPlugin implements PluginContainer {
     public AssignmentManager getAssignmentManager() {
     	return assignmentManager;
     }
+
+    public BoxManager getBoxManager() {
+    	return boxManager;
+	}
     
     public Logger getLogger() {
     	return logger;
