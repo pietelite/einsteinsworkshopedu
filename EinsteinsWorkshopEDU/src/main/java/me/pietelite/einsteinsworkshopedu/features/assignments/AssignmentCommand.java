@@ -25,7 +25,7 @@ import me.pietelite.einsteinsworkshopedu.features.assignments.Assignment.TitleTo
 @CommandAlias("einsteinsworkshop|ew")
 @Subcommand("assignment|a")
 @Syntax("/ew assignment add|remove|list")
-@CommandPermission("einsteinsworkshop.command.assignment")
+@CommandPermission("einsteinsworkshop.command")
 public class AssignmentCommand extends EinsteinsWorkshopCommand {
 	
 	public AssignmentCommand(EWEDUPlugin plugin) {
@@ -33,7 +33,6 @@ public class AssignmentCommand extends EinsteinsWorkshopCommand {
 	}
 		
 	@Subcommand("list")
-	@CommandPermission("einsteinsworkshop.command.assignment.list")
 	public void onList(CommandSource source) {
 		if (!plugin.getFeatureManager().getFeature(FeatureManager.FeatureName.ASSIGNMENTS).isEnabled) {
 			source.sendMessage(Text.of(TextColors.RED, "This feature has been disabled."));
@@ -55,7 +54,6 @@ public class AssignmentCommand extends EinsteinsWorkshopCommand {
 	}
 	
 	@Subcommand("complete")
-	@CommandPermission("einsteinsworkshop.command.assignment.complete")
 	@Conditions("player")
 	public void onComplete(CommandSource source, int id) {
 		if (!plugin.getFeatureManager().getFeature(FeatureManager.FeatureName.ASSIGNMENTS).isEnabled) {
@@ -89,7 +87,7 @@ public class AssignmentCommand extends EinsteinsWorkshopCommand {
 	}
 	
 	@Subcommand("add")
-	@CommandPermission("einsteinsworkshop.command.assignment.add")
+	@CommandPermission("einsteinsworkshop.instructor")
 	@CommandCompletion("@assignment_types")
 	public void onAdd(CommandSource source, String type, String[] title) {
 		if (!plugin.getFeatureManager().getFeature(FeatureManager.FeatureName.ASSIGNMENTS).isEnabled) {
@@ -112,7 +110,7 @@ public class AssignmentCommand extends EinsteinsWorkshopCommand {
 	}
 	
 	@Subcommand("info")
-	@CommandPermission("einsteinsworkshop.command.assignment.info")
+	@CommandPermission("einsteinsworkshop.instructor")
 	public void onInfo(CommandSource source, int id) {
 		if (!plugin.getFeatureManager().getFeature(FeatureManager.FeatureName.ASSIGNMENTS).isEnabled) {
 			source.sendMessage(Text.of(TextColors.RED, "This feature has been disabled."));
@@ -126,7 +124,7 @@ public class AssignmentCommand extends EinsteinsWorkshopCommand {
 	}
 	
 	@Subcommand("remove")
-	@CommandPermission("einsteinsworkshop.command.assignment.remove")
+	@CommandPermission("einsteinsworkshop.instructor")
 	public void onRemove(CommandSource source, int id) {
 		if (!plugin.getFeatureManager().getFeature(FeatureManager.FeatureName.ASSIGNMENTS).isEnabled) {
 			source.sendMessage(Text.of(TextColors.RED, "This feature has been disabled."));
@@ -143,7 +141,7 @@ public class AssignmentCommand extends EinsteinsWorkshopCommand {
 	}
 	
 	@Subcommand("edit title")
-	@CommandPermission("einsteinsworkshop.command.assignment.edit")
+	@CommandPermission("einsteinsworkshop.instructor")
 	public void onEditTitle(CommandSource source, int id, String[] title) {
 		if (!plugin.getFeatureManager().getFeature(FeatureManager.FeatureName.ASSIGNMENTS).isEnabled) {
 			source.sendMessage(Text.of(TextColors.RED, "This feature has been disabled."));
@@ -166,7 +164,7 @@ public class AssignmentCommand extends EinsteinsWorkshopCommand {
 	}
 	
 	@Subcommand("edit body")
-	@CommandPermission("einsteinsworkshop.command.assignment.edit")
+	@CommandPermission("einsteinsworkshop.instructor")
 	public void onEditBody(CommandSource source, int id, String[] body) {
 		if (!plugin.getFeatureManager().getFeature(FeatureManager.FeatureName.ASSIGNMENTS).isEnabled) {
 			source.sendMessage(Text.of(TextColors.RED, "This feature has been disabled."));
@@ -189,7 +187,7 @@ public class AssignmentCommand extends EinsteinsWorkshopCommand {
 	}
 	
 	@Subcommand("edit type")
-	@CommandPermission("einsteinsworkshop.command.assignment.edit")
+	@CommandPermission("einsteinsworkshop.instructor")
 	@CommandCompletion("<id> @assignment_types")
 	public void onEditType(CommandSource source, int id, String type) {
 		if (!plugin.getFeatureManager().getFeature(FeatureManager.FeatureName.ASSIGNMENTS).isEnabled) {

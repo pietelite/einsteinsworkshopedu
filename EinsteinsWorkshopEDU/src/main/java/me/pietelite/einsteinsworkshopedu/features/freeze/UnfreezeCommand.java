@@ -19,7 +19,7 @@ import me.pietelite.einsteinsworkshopedu.EinsteinsWorkshopCommand;
 @CommandAlias("einsteinsworkshop|ew")
 @Subcommand("unfreeze|uf")
 @Syntax("/ew unfreeze all|player")
-@CommandPermission("einsteinsworkshop.command.unfreeze")
+@CommandPermission("einsteinsworkshop.instructor")
 public class UnfreezeCommand extends EinsteinsWorkshopCommand {
 
     /**

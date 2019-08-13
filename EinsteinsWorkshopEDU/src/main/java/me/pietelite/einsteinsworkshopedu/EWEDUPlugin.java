@@ -15,6 +15,8 @@ import java.util.Scanner;
 import me.pietelite.einsteinsworkshopedu.features.FeatureManager;
 import me.pietelite.einsteinsworkshopedu.features.boxes.BoxCommand;
 import me.pietelite.einsteinsworkshopedu.features.boxes.BoxManager;
+import me.pietelite.einsteinsworkshopedu.features.boxes.PlayerLocationManager;
+import me.pietelite.einsteinsworkshopedu.listeners.*;
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.config.ConfigDir;
@@ -23,6 +25,7 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.action.InteractEvent;
+import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.event.entity.TargetEntityEvent;
 import org.spongepowered.api.event.game.GameReloadEvent;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
@@ -30,6 +33,7 @@ import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
 import org.spongepowered.api.event.item.inventory.TargetInventoryEvent;
 import org.spongepowered.api.event.message.MessageChannelEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
+import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 
@@ -44,11 +48,6 @@ import me.pietelite.einsteinsworkshopedu.features.assignments.AssignmentManager;
 import me.pietelite.einsteinsworkshopedu.features.freeze.FreezeCommand;
 import me.pietelite.einsteinsworkshopedu.features.freeze.FreezeManager;
 import me.pietelite.einsteinsworkshopedu.features.freeze.UnfreezeCommand;
-import me.pietelite.einsteinsworkshopedu.listeners.ChatListener;
-import me.pietelite.einsteinsworkshopedu.listeners.InteractEventListener;
-import me.pietelite.einsteinsworkshopedu.listeners.LoginEventListener;
-import me.pietelite.einsteinsworkshopedu.listeners.TargetEntityEventListener;
-import me.pietelite.einsteinsworkshopedu.listeners.TargetInventoryEventListener;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
@@ -61,11 +60,9 @@ import ninja.leaping.configurate.loader.ConfigurationLoader;
  * <p>
  * <b>Permissions</b>
  * <p>
- * <li><i>einsteinsworkshop.command</i>: Allows the use of the /einsteinsworkshop command</li>
- * <li><i>einsteinsworkshop.command.freeze</i>: Allows the use of the /einsteinsworkshop freeze command</li>
- * <li><i>einsteinsworkshop.command.unfreeze</i>: Allows the use of the /einsteinsworkshop unfreeze command</li>
- * <li><i>einsteinsworkshop.command.nickname</i>: Allows the use of the /einsteinsworkshop nickname command</li>
- * <li><i>einsteinsworkshop.freezeimmunity</i>: Makes the player immune to freezing</i>
+ * <li><i>einsteinsworkshop.student</i>: Allows the use of the student-level abilities</li>
+ * <li><i>einsteinsworkshop.instructor</i>: Allows the use of all instructor-level abilities</li>
+ * <li><i>einsteinsworkshop.immunity</i>: Makes the player immune to student-altering effects</i>
  */
 @Plugin(id = ID,
 		name = "EinsteinsWorkshopEDU",
@@ -73,12 +70,12 @@ import ninja.leaping.configurate.loader.ConfigurationLoader;
 		description = "Education Administrative Tool")
 public class EWEDUPlugin implements PluginContainer {
 	
-	public static final String VERSION = "1.0";
-	public static final String ID = "ewedu";
+	static final String VERSION = "1.0";
+	static final String ID = "einsteinsworkshopedu";
 	
-	public static final String LOG_IN_MESSAGE_FILE_NAME = "log_in_message.txt";
+	private static final String LOG_IN_MESSAGE_FILE_NAME = "log_in_message.txt";
 	
-	public static final String DATA_FOLDER_NAME = "einsteinsworkshop";
+	private static final String DATA_FOLDER_NAME = "einsteinsworkshop";
 	
 	@Inject
     /** General logger. From Sponge API. */
@@ -110,6 +107,8 @@ public class EWEDUPlugin implements PluginContainer {
     private FreezeManager freezeManager;
     private AssignmentManager assignmentManager;
     private BoxManager boxManager;
+
+    private PlayerLocationManager playerLocationManager;
     
     private List<String> loginMessage;
 
@@ -128,6 +127,7 @@ public class EWEDUPlugin implements PluginContainer {
         freezeManager = new FreezeManager(this);
         assignmentManager = new AssignmentManager(this);
         boxManager = new BoxManager(this);
+        playerLocationManager = new PlayerLocationManager(this);
         
         loginMessage = readLoginMessageFile(loadLoginMessageFile());
         
@@ -159,6 +159,7 @@ public class EWEDUPlugin implements PluginContainer {
 					featureNode.getNode(feature.name).getNode("enabled").setValue(true);
 				}
                 featureNode.getNode("assignments").getNode("types").setValue(Assignment.DEFAULT_ASSIGNMENT_TYPES);
+				featureNode.getNode("boxes").getNode("wand_item").setValue(ItemTypes.BRICK.getName());
                 configManager.save(rootNode);
                 logger.info("New Configuration File created successfully!");
             } catch (IOException e) {
@@ -180,6 +181,7 @@ public class EWEDUPlugin implements PluginContainer {
 				} else {
 					return object.toString();}
 				});
+			this.getBoxManager().setWandItemName(featureNode.getNode("boxes").getNode("wand_item").getString());
 			getLogger().info("List of Valid Assignment Types: " + assignmentTypes.toString());
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -235,6 +237,7 @@ public class EWEDUPlugin implements PluginContainer {
 		Sponge.getEventManager().registerListener(this, TargetInventoryEvent.class, Order.LAST, new TargetInventoryEventListener(this));
 		Sponge.getEventManager().registerListener(this, ClientConnectionEvent.Join.class, Order.LAST, new LoginEventListener(this));
 		Sponge.getEventManager().registerListener(this, MessageChannelEvent.Chat.class, Order.LAST, new ChatListener(this));
+		Sponge.getEventManager().registerListener(this, ChangeBlockEvent.class, Order.FIRST, new ChangeBlockListener(this));
 	}	
 
 	/**
@@ -290,6 +293,10 @@ public class EWEDUPlugin implements PluginContainer {
         }
     }
 
+    public SpongeCommandManager getCommandManager() {
+    	return commandManager;
+	}
+
     public FeatureManager getFeatureManager() {
     	return featureManager;
 	}
@@ -305,7 +312,11 @@ public class EWEDUPlugin implements PluginContainer {
     public BoxManager getBoxManager() {
     	return boxManager;
 	}
-    
+
+	public PlayerLocationManager getPlayerLocationManager() {
+		return playerLocationManager;
+	}
+
     public Logger getLogger() {
     	return logger;
     }

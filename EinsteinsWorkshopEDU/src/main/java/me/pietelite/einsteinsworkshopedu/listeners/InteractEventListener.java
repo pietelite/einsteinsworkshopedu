@@ -1,11 +1,19 @@
 package me.pietelite.einsteinsworkshopedu.listeners;
 
+import me.pietelite.einsteinsworkshopedu.features.boxes.Box;
+import me.pietelite.einsteinsworkshopedu.tools.SimpleLocation;
+import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.event.Cancellable;
 import org.spongepowered.api.event.EventListener;
 import org.spongepowered.api.event.action.InteractEvent;
 
 import me.pietelite.einsteinsworkshopedu.EWEDUPlugin;
+import org.spongepowered.api.event.block.InteractBlockEvent;
+import org.spongepowered.api.event.item.inventory.InteractItemEvent;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.format.TextColors;
+
+import java.util.NoSuchElementException;
 
 public class InteractEventListener implements EventListener<InteractEvent> {
 
@@ -16,20 +24,66 @@ public class InteractEventListener implements EventListener<InteractEvent> {
 	}
 	
 	@Override
-	public void handle(InteractEvent event) throws Exception {
+	public void handle(InteractEvent event) {
 		Object root = event.getCause().root();
 		if (root instanceof Player) {
-			Player movingPlayer = (Player) root;
-			if (plugin.getFreezeManager().getFrozenPlayers().contains(movingPlayer)) {
+			Player player = (Player) root;
+			if (plugin.getFreezeManager().getFrozenPlayers().contains(player)) {
 				try {
-					((Cancellable) event).setCancelled(true);
+					event.setCancelled(true);
 					return;
 				} catch (ClassCastException e) {
 					// ignore
 					return;
 				}
 			}
+
+			for (Box box : plugin.getBoxManager().getBoxes()) {
+				try {
+					if (box.contains(new SimpleLocation(
+							event.getInteractionPoint().get().getFloorX(),
+							event.getInteractionPoint().get().getFloorY(),
+							event.getInteractionPoint().get().getFloorZ(),
+							player.getLocation().getExtent())) && !box.building) {
+						player.sendMessage(Text.of(TextColors.RED, "You can't edit here!"));
+						event.setCancelled(true);
+						break;
+					}
+				} catch (ClassCastException | NoSuchElementException e) {
+					// ignore
+					return;
+				}
+			}
+			if (event instanceof InteractBlockEvent.Primary) {
+				InteractBlockEvent.Primary primaryInteractEvent = (InteractBlockEvent.Primary) event;
+				if (player.getItemInHand(HandTypes.MAIN_HAND).get().getType().getName().equals(
+						plugin.getBoxManager().getWandItemName())) {
+					SimpleLocation newLocation = new SimpleLocation(primaryInteractEvent.getTargetBlock().getPosition(),player.getWorld());
+					SimpleLocation priorLocation = plugin.getBoxManager().getPosition1Map().put(
+							player.getUniqueId(),
+							newLocation
+					);
+					if (!newLocation.equals(priorLocation)) {
+						player.sendMessage(Text.of(TextColors.GREEN, "Position 1 set!"));
+					}
+					event.setCancelled(true);
+				}
+			}
+			if (event instanceof InteractBlockEvent.Secondary) {
+				InteractBlockEvent.Secondary secondaryInteractEvent = (InteractBlockEvent.Secondary) event;
+				if (player.getItemInHand(HandTypes.MAIN_HAND).get().getType().getName().equals(
+						plugin.getBoxManager().getWandItemName())) {
+					SimpleLocation newLocation = new SimpleLocation(secondaryInteractEvent.getTargetBlock().getPosition(),player.getWorld());
+					SimpleLocation priorLocation = plugin.getBoxManager().getPosition2Map().put(
+							player.getUniqueId(),
+							newLocation
+					);
+					if (!newLocation.equals(priorLocation)) {
+						player.sendMessage(Text.of(TextColors.GREEN, "Position 2 set!"));
+					}
+					event.setCancelled(true);
+				}
+			}
 		}
 	}
-
 }

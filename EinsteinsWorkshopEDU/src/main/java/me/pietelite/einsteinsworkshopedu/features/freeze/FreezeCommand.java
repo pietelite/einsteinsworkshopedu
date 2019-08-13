@@ -19,7 +19,7 @@ import me.pietelite.einsteinsworkshopedu.EinsteinsWorkshopCommand;
 @CommandAlias("einsteinsworkshop|ew")
 @Subcommand("freeze|f")
 @Syntax("/ew freeze all|player")
-@CommandPermission("einsteinsworkshop.command.freeze")
+@CommandPermission("einsteinsworkshop.instructor")
 public class FreezeCommand extends EinsteinsWorkshopCommand {
 
     /**
@@ -37,7 +37,7 @@ public class FreezeCommand extends EinsteinsWorkshopCommand {
 			return;
 		}
     	for (Player player : Sponge.getServer().getOnlinePlayers()) {
-			if (!player.hasPermission("einsteinsworkshop.freezeimmunity")) {
+			if (!player.hasPermission("einsteinsworkshop.immunity")) {
 				if (!plugin.getFreezeManager().getFrozenPlayers().contains(player)) {
 					plugin.getFreezeManager().getFrozenPlayers().add(player);
 					player.sendMessage(Text.of(TextColors.AQUA, "You have been frozen!"));
@@ -57,7 +57,7 @@ public class FreezeCommand extends EinsteinsWorkshopCommand {
 		}
     	for (Player onlinePlayer : Sponge.getServer().getOnlinePlayers()) {
 			if (onlinePlayer.getDisplayNameData().displayName().get().toPlain().equalsIgnoreCase(name)) {
-				if (!onlinePlayer.hasPermission("einsteinsworkshop.freezeimmunity")) {
+				if (!onlinePlayer.hasPermission("einsteinsworkshop.immunity")) {
 					if (!plugin.getFreezeManager().getFrozenPlayers().contains(onlinePlayer)) {
 						plugin.getFreezeManager().getFrozenPlayers().add(onlinePlayer);
 						source.sendMessage(Utils.createFreezePlayerMessage(true, name));

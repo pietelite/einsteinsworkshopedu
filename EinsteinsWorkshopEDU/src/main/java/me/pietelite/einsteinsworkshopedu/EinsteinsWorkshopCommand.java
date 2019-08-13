@@ -31,24 +31,31 @@ public class EinsteinsWorkshopCommand extends BaseCommand {
     	Player player = (Player) source;
     	player.sendMessage(Text.of(TextColors.GOLD, "Help: /einsteinsworkshop (/ew)"));
     	player.sendMessage(Text.of(TextColors.GOLD, "-------------"));
-    	if (player.hasPermission("einsteinsworkshop.command.freeze")) {
+
+    	if (player.hasPermission("einsteinsworkshop.instructor")) {
     		player.sendMessage(Text.of(TextColors.AQUA, "/ew freeze all|player"));
     		player.sendMessage(Text.of(TextColors.AQUA, "/ew unfreeze all|player"));
     	}
-    	if (player.hasPermission("einsteinsworkshop.command.assignment.add"))
-    		player.sendMessage(Text.of(TextColors.AQUA, "/ew assignment add <type> <id> <body...>"));
-    	if (player.hasPermission("einsteinsworkshop.command.assignment.remove"))
+
+    	if (player.hasPermission("einsteinsworkshop.instructor"))
+    		player.sendMessage(Text.of(TextColors.AQUA, "/ew assignment add <type> <body...>"));
+
+    	if (player.hasPermission("einsteinsworkshop.instructor"))
     		player.sendMessage(Text.of(TextColors.AQUA, "/ew assignment remove <id>"));
-    	if (player.hasPermission("einsteinsworkshop.command.assignment.list"))
+
+		if (player.hasPermission("einsteinsworkshop.student"))
     		player.sendMessage(Text.of(TextColors.AQUA, "/ew assignment list"));
-    	if (player.hasPermission("einsteinsworkshop.command.assignment.remove"))
+
+    	if (player.hasPermission("einsteinsworkshop.instructor"))
     		player.sendMessage(Text.of(TextColors.AQUA, "/ew assignment remove <id>"));
-    	if (player.hasPermission("einsteinsworkshop.command.assignment.complete"))
+
+		if (player.hasPermission("einsteinsworkshop.student"))
     		player.sendMessage(Text.of(TextColors.AQUA, "/ew assignment complete <id>"));
-    	if (player.hasPermission("einsteinsworkshop.command.assignment.edit"))
+
+    	if (player.hasPermission("einsteinsworkshop.instructor"))
     		player.sendMessage(Text.of(TextColors.AQUA, "/ew assignment edit <title|body|type> <id> <value>"));
-    	if (player.hasPermission("einsteinsworkshop.command.assignment.info"))
+
+    	if (player.hasPermission("einsteinsworkshop.student"))
     		player.sendMessage(Text.of(TextColors.AQUA, "/ew assignment info <id>"));
-    	
     }
 }
