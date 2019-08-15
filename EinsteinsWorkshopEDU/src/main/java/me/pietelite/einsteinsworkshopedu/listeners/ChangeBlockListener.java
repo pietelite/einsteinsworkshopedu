@@ -5,7 +5,7 @@ import me.pietelite.einsteinsworkshopedu.tools.SimpleLocation;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.EventListener;
 
-import me.pietelite.einsteinsworkshopedu.EWEDUPlugin;
+import me.pietelite.einsteinsworkshopedu.EweduPlugin;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
@@ -16,9 +16,9 @@ import java.util.NoSuchElementException;
 
 public class ChangeBlockListener implements EventListener<ChangeBlockEvent> {
 
-    private EWEDUPlugin plugin;
+    private EweduPlugin plugin;
 
-    public ChangeBlockListener(EWEDUPlugin plugin) {
+    public ChangeBlockListener(EweduPlugin plugin) {
         this.plugin = plugin;
     }
 
@@ -37,13 +37,13 @@ public class ChangeBlockListener implements EventListener<ChangeBlockEvent> {
                 }
             }
 
-            for (Box box : plugin.getBoxManager().getBoxes()) {
+            for (Box box : plugin.getBoxManager().getElements()) {
                 if (!box.building) {
                     try {
                         Location<World> location = event.getTransactions().get(0).getOriginal().getLocation().get();
                         if (!player.hasPermission("einsteinsworkshop.instructor") &&
-                                box.contains(new SimpleLocation(location.getPosition(), location.getExtent()))) {
-                            player.sendMessage(Text.of(TextColors.RED, "You can't build here!"));
+                                box.contains(new SimpleLocation(location.getBlockPosition(), location.getExtent()))) {
+                            player.sendMessage(Text.of(TextColors.RED, "You can't edit here!"));
                             event.setCancelled(true);
                             return;
                         }

@@ -5,13 +5,13 @@ import org.spongepowered.api.event.Cancellable;
 import org.spongepowered.api.event.EventListener;
 import org.spongepowered.api.event.item.inventory.TargetInventoryEvent;
 
-import me.pietelite.einsteinsworkshopedu.EWEDUPlugin;
+import me.pietelite.einsteinsworkshopedu.EweduPlugin;
 
 public class TargetInventoryEventListener implements EventListener<TargetInventoryEvent> {
 
-	private EWEDUPlugin plugin;
+	private EweduPlugin plugin;
 	
-	public TargetInventoryEventListener(EWEDUPlugin plugin) {
+	public TargetInventoryEventListener(EweduPlugin plugin) {
 		this.plugin = plugin;
 	}
 	

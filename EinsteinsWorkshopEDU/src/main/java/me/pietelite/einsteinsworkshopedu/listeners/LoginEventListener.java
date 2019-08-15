@@ -9,13 +9,13 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyles;
 
-import me.pietelite.einsteinsworkshopedu.EWEDUPlugin;
+import me.pietelite.einsteinsworkshopedu.EweduPlugin;
 
 public class LoginEventListener implements EventListener<ClientConnectionEvent.Join> {
 
-	private EWEDUPlugin plugin;
+	private EweduPlugin plugin;
 	
-	public LoginEventListener(EWEDUPlugin plugin) {
+	public LoginEventListener(EweduPlugin plugin) {
 		this.plugin = plugin;
 	}
 	

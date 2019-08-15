@@ -15,7 +15,7 @@ import org.spongepowered.api.event.entity.explosive.TargetExplosiveEvent;
 import org.spongepowered.api.event.entity.item.TargetItemEvent;
 import org.spongepowered.api.event.entity.living.TargetLivingEvent;
 
-import me.pietelite.einsteinsworkshopedu.EWEDUPlugin;
+import me.pietelite.einsteinsworkshopedu.EweduPlugin;
 import org.spongepowered.api.event.entity.projectile.TargetProjectileEvent;
 import org.spongepowered.api.event.item.inventory.ChangeInventoryEvent;
 import org.spongepowered.api.text.Text;
@@ -28,9 +28,9 @@ import java.util.List;
 
 public class TargetEntityEventListener implements EventListener<TargetEntityEvent> {
 	
-	private EWEDUPlugin plugin;
+	private EweduPlugin plugin;
 
-	public TargetEntityEventListener(EWEDUPlugin plugin) {
+	public TargetEntityEventListener(EweduPlugin plugin) {
 		this.plugin = plugin;
 	}
 	
@@ -83,7 +83,7 @@ public class TargetEntityEventListener implements EventListener<TargetEntityEven
 				Box lastBox = BoxManager.NONE;
 				Box currentBox = BoxManager.NONE;
 				int currentBoxIndex = 0;
-				List<Box> boxes = plugin.getBoxManager().getBoxes();
+				List<Box> boxes = plugin.getBoxManager().getElements();
 				for (int i = 0; i < boxes.size(); i++) {
 					if (boxes.get(i).contains(lastSavedLocation)) {
 						lastBox = boxes.get(i);

@@ -5,14 +5,14 @@ import java.util.List;
 
 import org.spongepowered.api.entity.living.player.Player;
 
-import me.pietelite.einsteinsworkshopedu.EWEDUPlugin;
+import me.pietelite.einsteinsworkshopedu.EweduPlugin;
 
 public class FreezeManager {
 
 	private List<Player> frozenPlayers;
 	public boolean isAllFrozen = false;
 	
-	public FreezeManager(EWEDUPlugin plugin) {
+	public FreezeManager(EweduPlugin plugin) {
 		this.frozenPlayers = new LinkedList<Player>();
 	}
 	

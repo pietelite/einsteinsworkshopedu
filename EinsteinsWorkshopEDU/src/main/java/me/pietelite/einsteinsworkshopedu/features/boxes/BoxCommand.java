@@ -8,27 +8,42 @@ import com.flowpowered.math.vector.Vector3d;
 import me.pietelite.einsteinsworkshopedu.features.FeatureManager;
 import me.pietelite.einsteinsworkshopedu.tools.SimpleLocation;
 import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
 import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Subcommand;
-import me.pietelite.einsteinsworkshopedu.EWEDUPlugin;
+import me.pietelite.einsteinsworkshopedu.EweduPlugin;
 import me.pietelite.einsteinsworkshopedu.EinsteinsWorkshopCommand;
 import org.spongepowered.api.util.Color;
-import org.spongepowered.api.world.World;
 
 @CommandAlias("einsteinsworkshop|ew")
 @Subcommand("box|b")
-@Syntax("/ew box create|list|delete")
+@Syntax("/ew box")
 @CommandPermission("einsteinsworkshop.instructor")
 public class BoxCommand extends EinsteinsWorkshopCommand {
 
-    public BoxCommand(EWEDUPlugin plugin) {
+    public BoxCommand(EweduPlugin plugin) {
         super(plugin);
+        addSubCommand(new SubCommand("einsteinsworkshop.instructor", "/ew box list"));
+        addSubCommand(new SubCommand("einsteinsworkshop.instructor", "/ew box position1|pos1"));
+        addSubCommand(new SubCommand("einsteinsworkshop.instructor", "/ew box position2|pos2"));
+        addSubCommand(new SubCommand("einsteinsworkshop.instructor", "/ew box pos1"));
+        addSubCommand(new SubCommand("einsteinsworkshop.instructor", "/ew box create"));
+        addSubCommand(new SubCommand("einsteinsworkshop.instructor", "/ew box destroy <id>"));
+        addSubCommand(new SubCommand("einsteinsworkshop.instructor", "/ew box info [id]"));
+        addSubCommand(new SubCommand("einsteinsworkshop.instructor", "/ew box pos1"));
+        addSubCommand(new SubCommand("einsteinsworkshop.instructor", "/ew box edit movement <id> true|false"));
+        addSubCommand(new SubCommand("einsteinsworkshop.instructor", "/ew box edit building <id> true|false"));
+        addSubCommand(new SubCommand("einsteinsworkshop.instructor", "/ew box show <id>"));
+        addSubCommand(new SubCommand("einsteinsworkshop.instructor", "/ew box show all"));
+        addSubCommand(new SubCommand("einsteinsworkshop.instructor", "/ew box teleport|tp <id>"));
+        addSubCommand(new SubCommand("einsteinsworkshop.instructor", "/ew box wand"));
     }
 
     @Subcommand("list")
@@ -37,13 +52,13 @@ public class BoxCommand extends EinsteinsWorkshopCommand {
             source.sendMessage(Text.of(TextColors.RED, "This feature has been disabled."));
             return;
         }
-        if (plugin.getBoxManager().getBoxes().isEmpty()) {
+        if (plugin.getBoxManager().getElements().isEmpty()) {
             source.sendMessage(Text.of(TextColors.YELLOW, "There are no boxes yet."));
             return;
         }
         source.sendMessage(Text.of(TextColors.GOLD, "-- All Boxes --"));
-        for (int i = 0; i < plugin.getBoxManager().getBoxes().size(); i++) {
-            source.sendMessage(plugin.getBoxManager().getBoxes().get(i).formatReadable(i + 1));
+        for (int i = 0; i < plugin.getBoxManager().getElements().size(); i++) {
+            source.sendMessage(plugin.getBoxManager().getElements().get(i).formatReadable(i + 1));
         }
     }
 
@@ -70,12 +85,12 @@ public class BoxCommand extends EinsteinsWorkshopCommand {
         if (position == Box.Position.POSITION1) {
             plugin.getBoxManager().getPosition1Map().put(
                     player.getUniqueId(),
-                    new SimpleLocation(player.getTransform().getPosition(), player.getWorld())
+                    new SimpleLocation(player.getLocation().getBlockPosition(), player.getWorld())
             );
         } else {
             plugin.getBoxManager().getPosition2Map().put(
                     player.getUniqueId(),
-                    new SimpleLocation(player.getTransform().getPosition(), player.getWorld())
+                    new SimpleLocation(player.getLocation().getBlockPosition(), player.getWorld())
             );
         }
     }
@@ -98,16 +113,14 @@ public class BoxCommand extends EinsteinsWorkshopCommand {
             player.sendMessage(Text.of(TextColors.RED, "Your two selection points must be in the same world."));
         } else {
             Box newBox = new Box(position1.getPosition(), position2.getPosition(), position1.getWorld());
-
-            for (Box box : plugin.getBoxManager().getBoxes()) {
+            for (Box box : plugin.getBoxManager().getElements()) {
                 if (box.isOverlapping(newBox)) {
                     player.sendMessage(Text.of(TextColors.RED, "Your selection cannot overlap with another box."));
                     return;
                 }
             }
-
-            plugin.getBoxManager().getBoxes().add(newBox);
-            plugin.getBoxManager().saveBoxes();
+            plugin.getBoxManager().getElements().add(newBox);
+            plugin.getBoxManager().save();
             player.sendMessage(Text.of(TextColors.GREEN, "Box added!"));
         }
 
@@ -121,8 +134,8 @@ public class BoxCommand extends EinsteinsWorkshopCommand {
         }
         Player player = (Player) source;
         try {
-            plugin.getBoxManager().getBoxes().remove(id - 1);
-            plugin.getBoxManager().saveBoxes();
+            plugin.getBoxManager().getElements().remove(id - 1);
+            plugin.getBoxManager().save();
             player.sendMessage(Text.of(TextColors.GREEN, "Box ", TextColors.GOLD, id, TextColors.GREEN, " removed!"));
         } catch (IndexOutOfBoundsException e) {
             player.sendMessage(Text.of(TextColors.RED, "No box matches with that id!"));
@@ -137,7 +150,7 @@ public class BoxCommand extends EinsteinsWorkshopCommand {
         }
         Player player = (Player) source;
         try {
-            player.sendMessage(plugin.getBoxManager().getBoxes().get(id - 1).formatReadableVerbose(id));
+            player.sendMessage(plugin.getBoxManager().getElements().get(id - 1).formatReadableVerbose(id));
         } catch (IndexOutOfBoundsException e) {
             player.sendMessage(Text.of(TextColors.RED, "No box matches with that id!"));
         }
@@ -147,11 +160,13 @@ public class BoxCommand extends EinsteinsWorkshopCommand {
     @Conditions("player")
     public void onInfo(CommandSource source) {
         Player player = (Player) source;
-        for (int i = 0; i < plugin.getBoxManager().getBoxes().size(); i++) {
-            if (plugin.getBoxManager().getBoxes().get(i).contains(player)) {
+        for (int i = 0; i < plugin.getBoxManager().getElements().size(); i++) {
+            if (plugin.getBoxManager().getElements().get(i).contains(player)) {
                 onInfo(player, i + 1);
+                return;
             }
         }
+        player.sendMessage(Text.of(TextColors.YELLOW, "You aren't in a box."));
     }
 
     @Subcommand("edit movement")
@@ -163,14 +178,14 @@ public class BoxCommand extends EinsteinsWorkshopCommand {
         }
         Player player = (Player) source;
         try {
-            if (plugin.getBoxManager().getBoxes().get(id - 1).movement == value) {
+            if (plugin.getBoxManager().getElements().get(id - 1).movement == value) {
                 player.sendMessage(Text.of(
                         TextColors.YELLOW, "Student mobility was already set to ",
                         TextColors.DARK_PURPLE, value,
                         TextColors.YELLOW, "!"));
             } else {
-                plugin.getBoxManager().getBoxes().get(id - 1).movement = value;
-                plugin.getBoxManager().saveBoxes();
+                plugin.getBoxManager().getElements().get(id - 1).movement = value;
+                plugin.getBoxManager().save();
                 player.sendMessage(Text.of(TextColors.GREEN, "Student mobility set!"));
             }
         } catch (IndexOutOfBoundsException e) {
@@ -186,14 +201,14 @@ public class BoxCommand extends EinsteinsWorkshopCommand {
         }
         Player player = (Player) source;
         try {
-            if (plugin.getBoxManager().getBoxes().get(id - 1).building == value) {
+            if (plugin.getBoxManager().getElements().get(id - 1).building == value) {
                 player.sendMessage(Text.of(
                         TextColors.YELLOW, "Student building ability was already set to ",
                         TextColors.DARK_PURPLE, value,
                         TextColors.YELLOW, "!"));
             } else {
-                plugin.getBoxManager().getBoxes().get(id - 1).building = value;
-                plugin.getBoxManager().saveBoxes();
+                plugin.getBoxManager().getElements().get(id - 1).building = value;
+                plugin.getBoxManager().save();
                 player.sendMessage(Text.of(TextColors.GREEN, "Student building ability set!"));
             }
         } catch (IndexOutOfBoundsException e) {
@@ -210,7 +225,7 @@ public class BoxCommand extends EinsteinsWorkshopCommand {
         }
         Player player = (Player) source;
         try {
-            plugin.getBoxManager().getBoxes().get(id - 1).spawnBorderParticles(player, Color.GREEN);
+            plugin.getBoxManager().getElements().get(id - 1).spawnBorderParticles(player, Color.GREEN);
             player.sendMessage(Text.of(
                     TextColors.GREEN, "Showing box ",
                     TextColors.GOLD, id,
@@ -228,7 +243,7 @@ public class BoxCommand extends EinsteinsWorkshopCommand {
             return;
         }
         Player player = (Player) source;
-        for (Box box : plugin.getBoxManager().getBoxes()) {
+        for (Box box : plugin.getBoxManager().getElements()) {
             box.spawnBorderParticles(player, Color.GREEN);
         }
         player.sendMessage(Text.of(TextColors.GREEN, "Showing all boxes"));
@@ -243,7 +258,7 @@ public class BoxCommand extends EinsteinsWorkshopCommand {
         }
         Player player = (Player) source;
         try {
-            Box box = plugin.getBoxManager().getBoxes().get(id - 1);
+            Box box = plugin.getBoxManager().getElements().get(id - 1);
             player.setTransform(new Transform<>(
                     player.getWorld(),
                     new Vector3d(box.getXMin(), box.getYMin(), box.getZMin()),
@@ -256,6 +271,15 @@ public class BoxCommand extends EinsteinsWorkshopCommand {
         } catch (IndexOutOfBoundsException e) {
             player.sendMessage(Text.of(TextColors.RED, "No box matches with that id!"));
         }
+    }
+
+    @Subcommand("wand")
+    @Conditions("player")
+    public void onWand(CommandSource source) {
+        ((Player) source).setItemInHand(
+                HandTypes.MAIN_HAND,
+                ItemStack.of(plugin.getBoxManager().getWandItem(), 1));
+        source.sendMessage(Text.of(TextColors.GREEN, "Here you go!"));
     }
 
 }

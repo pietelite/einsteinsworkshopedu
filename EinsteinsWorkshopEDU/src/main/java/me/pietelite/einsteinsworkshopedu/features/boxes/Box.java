@@ -1,12 +1,17 @@
 package me.pietelite.einsteinsworkshopedu.features.boxes;
 
 import com.flowpowered.math.vector.Vector3d;
+import com.flowpowered.math.vector.Vector3i;
 import me.pietelite.einsteinsworkshopedu.tools.SimpleLocation;
+import me.pietelite.einsteinsworkshopedu.tools.storage.EweduElement;
+import me.pietelite.einsteinsworkshopedu.tools.storage.StorageLine;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.effect.particle.ParticleEffect;
 import org.spongepowered.api.effect.particle.ParticleOptions;
 import org.spongepowered.api.effect.particle.ParticleTypes;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.item.ItemType;
+import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.util.Color;
@@ -14,37 +19,53 @@ import org.spongepowered.api.world.World;
 
 import java.util.*;
 
-public class Box {
+public class Box implements EweduElement {
 
-    final private Vector3d position1;
-    final private Vector3d position2;
+    public static final ItemType DEFAULT_BOX_WAND = ItemTypes.BRICK;
+    final private Vector3i position1;
+    final private Vector3i position2;
     final private UUID worldUUID;
     public boolean movement = false;
     public boolean building = false;
     private static final float LOCATION_CONDITION_OFFSET = 0.01f;
+
+    @Override
+    public StorageLine toStorageLine() {
+        return StorageLine.builder()
+                .addItem(this.getWorld().getUniqueId().toString())
+                .addItem(this.position1.getX())
+                .addItem(this.position1.getY())
+                .addItem(this.position1.getZ())
+                .addItem(this.position2.getX())
+                .addItem(this.position2.getY())
+                .addItem(this.position2.getZ())
+                .addItem(this.movement)
+                .addItem(this.building)
+                .build();
+    }
 
     public enum Position {
         POSITION1,
         POSITION2
     }
 
-    Box(Vector3d position1, Vector3d position2, UUID worldUUID) {
+    Box(Vector3i position1, Vector3i position2, UUID worldUUID) {
         this.position1 = position1;
         this.position2 = position2;
         this.worldUUID = worldUUID;
     }
 
-    Box(Vector3d position1, Vector3d position2, World world) {
+    Box(Vector3i position1, Vector3i position2, World world) {
         this(position1, position2, world.getUniqueId());
     }
 
-    Box(Vector3d position1, Vector3d position2, UUID worldUUID, boolean building, boolean movement) {
+    Box(Vector3i position1, Vector3i position2, UUID worldUUID, boolean building, boolean movement) {
         this(position1, position2, worldUUID);
         this.building = building;
         this.movement = movement;
     }
 
-    Box(Vector3d position1, Vector3d position2, World world, boolean building, boolean movement) {
+    Box(Vector3i position1, Vector3i position2, World world, boolean building, boolean movement) {
         this(position1, position2, world.getUniqueId(), building, movement);
     }
 
@@ -59,7 +80,7 @@ public class Box {
     }
 
     public boolean contains(Player player) {
-        return contains(new SimpleLocation(player.getTransform().getPosition(), player.getWorld()));
+        return contains(new SimpleLocation(player.getTransform().getLocation().getBlockPosition(), player.getWorld()));
     }
 
     public boolean isOverlapping(Box other) {
@@ -78,9 +99,9 @@ public class Box {
         List<Vector3d> output = new ArrayList<>();
         for (int i = 0; i < 8; i++) {
             Vector3d corner = new Vector3d(
-                    ((i / 4) % 2 == 0) ? position1.getFloorX() : position2.getFloorX(),
-                    ((i / 2) % 2 == 0) ? position1.getFloorY() : position2.getFloorY(),
-                    ((i    ) % 2 == 0) ? position1.getFloorZ() : position2.getFloorZ());
+                    ((i / 4) % 2 == 0) ? position1.getX() : position2.getX(),
+                    ((i / 2) % 2 == 0) ? position1.getY() : position2.getY(),
+                    ((i    ) % 2 == 0) ? position1.getZ() : position2.getZ());
             output.add(corner);
         }
         return output;
@@ -130,41 +151,28 @@ public class Box {
                 .build();
     }
 
-    public String formatStorage() {
-        return String.join(";",
-                this.getWorld().getUniqueId().toString(),
-                String.valueOf(this.position1.getX()),
-                String.valueOf(this.position1.getY()),
-                String.valueOf(this.position1.getZ()),
-                String.valueOf(this.position2.getX()),
-                String.valueOf(this.position2.getY()),
-                String.valueOf(this.position2.getZ()),
-                String.valueOf(this.movement),
-                String.valueOf(this.building));
-    }
-
     public int getXMin() {
-        return Math.min(this.position1.getFloorX(), this.position2.getFloorX());
+        return Math.min(this.position1.getX(), this.position2.getX());
     }
 
     private int getXMax() {
-        return Math.max(this.position1.getFloorX(), this.position2.getFloorX());
+        return Math.max(this.position1.getX(), this.position2.getX());
     }
 
     public int getYMin() {
-        return Math.min(this.position1.getFloorY(), this.position2.getFloorY());
+        return Math.min(this.position1.getY(), this.position2.getY());
     }
 
     private int getYMax() {
-        return Math.max(this.position1.getFloorY(), this.position2.getFloorY());
+        return Math.max(this.position1.getY(), this.position2.getY());
     }
 
     public int getZMin() {
-        return Math.min(this.position1.getFloorZ(), this.position2.getFloorZ());
+        return Math.min(this.position1.getZ(), this.position2.getZ());
     }
 
     private int getZMax() {
-        return Math.max(this.position1.getFloorZ(), this.position2.getFloorZ());
+        return Math.max(this.position1.getZ(), this.position2.getZ());
     }
 
     public World getWorld() {

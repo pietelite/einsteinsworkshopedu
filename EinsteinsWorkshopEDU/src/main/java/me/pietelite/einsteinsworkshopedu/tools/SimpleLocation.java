@@ -19,10 +19,6 @@ public class SimpleLocation {
         this.world = world;
     }
 
-    public SimpleLocation(Vector3d vector, World world) {
-        this(vector.getFloorX(), vector.getFloorY(), vector.getFloorZ(), world);
-    }
-
     public SimpleLocation(Location<World> location) {
         if (location == null) {
             this.blockX = 0;
@@ -53,8 +49,8 @@ public class SimpleLocation {
         return blockZ;
     }
 
-    public Vector3d getPosition() {
-        return new Vector3d(getBlockX(), getBlockY(), getBlockZ());
+    public Vector3i getPosition() {
+        return new Vector3i(getBlockX(), getBlockY(), getBlockZ());
     }
 
     public World getWorld() {

@@ -13,7 +13,7 @@ import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandCompletion;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Subcommand;
-import me.pietelite.einsteinsworkshopedu.EWEDUPlugin;
+import me.pietelite.einsteinsworkshopedu.EweduPlugin;
 import me.pietelite.einsteinsworkshopedu.EinsteinsWorkshopCommand;
 
 @CommandAlias("einsteinsworkshop|ew")
@@ -26,8 +26,10 @@ public class UnfreezeCommand extends EinsteinsWorkshopCommand {
      * Basic constructor.
      * @param plugin The main plugin object.
      */
-    public UnfreezeCommand(EWEDUPlugin plugin) {
+    public UnfreezeCommand(EweduPlugin plugin) {
     	super(plugin);
+		addSubCommand(new SubCommand("einsteinsworkshop.instructor", "/ew unfreeze all|a"));
+		addSubCommand(new SubCommand("einsteinsworkshop.instructor", "/ew unfreeze player|p <username>"));
     }
     
     @Subcommand("all|a")

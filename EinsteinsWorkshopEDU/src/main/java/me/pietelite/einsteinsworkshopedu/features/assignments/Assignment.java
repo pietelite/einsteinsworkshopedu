@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import me.pietelite.einsteinsworkshopedu.tools.storage.EweduElement;
+import me.pietelite.einsteinsworkshopedu.tools.storage.StorageLine;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
@@ -12,7 +14,7 @@ import org.spongepowered.api.text.format.TextColor;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyles;
 
-public class Assignment {
+public class Assignment implements EweduElement {
 
 	public static final int MAXIMUM_TITLE_LENGTH = 30;
 	public static final int MAXIMUM_BODY_LENGTH = 200;
@@ -131,15 +133,17 @@ public class Assignment {
 				.append(Text.of(TextColors.YELLOW, "\nCompleted By: ", TextColors.AQUA, String.join(", ", getPlayersCompletedNames())))
 				.build();
 	}
-	
-	public String formatData() {
-		return String.join(DATA_REGEX,
-				type,
-				title.toPlain(),
-				body.toPlain(),
-				String.valueOf(timestamp.getTime()));
+
+	@Override
+	public StorageLine toStorageLine() {
+		return StorageLine.builder()
+				.addItem(type)
+				.addItem(title.toPlain())
+				.addItem(body.toPlain())
+				.addItem(String.valueOf(timestamp.getTime()))
+				.build();
 	}
-	
+
 	public final class TitleTooLongException extends Exception {
 		private static final long serialVersionUID = 1L;
 	}

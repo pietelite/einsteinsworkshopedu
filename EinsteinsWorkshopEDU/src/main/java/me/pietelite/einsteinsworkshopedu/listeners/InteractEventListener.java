@@ -7,9 +7,8 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.EventListener;
 import org.spongepowered.api.event.action.InteractEvent;
 
-import me.pietelite.einsteinsworkshopedu.EWEDUPlugin;
+import me.pietelite.einsteinsworkshopedu.EweduPlugin;
 import org.spongepowered.api.event.block.InteractBlockEvent;
-import org.spongepowered.api.event.item.inventory.InteractItemEvent;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
@@ -17,9 +16,9 @@ import java.util.NoSuchElementException;
 
 public class InteractEventListener implements EventListener<InteractEvent> {
 
-	private EWEDUPlugin plugin;
+	private EweduPlugin plugin;
 	
-	public InteractEventListener(EWEDUPlugin plugin) {
+	public InteractEventListener(EweduPlugin plugin) {
 		this.plugin = plugin;
 	}
 	
@@ -38,13 +37,14 @@ public class InteractEventListener implements EventListener<InteractEvent> {
 				}
 			}
 
-			for (Box box : plugin.getBoxManager().getBoxes()) {
+			for (Box box : plugin.getBoxManager().getElements()) {
 				try {
-					if (box.contains(new SimpleLocation(
-							event.getInteractionPoint().get().getFloorX(),
-							event.getInteractionPoint().get().getFloorY(),
-							event.getInteractionPoint().get().getFloorZ(),
-							player.getLocation().getExtent())) && !box.building) {
+					if (!player.hasPermission("einsteinsworkshop.instructor") &&
+							box.contains(new SimpleLocation(
+								event.getInteractionPoint().get().getFloorX(),
+								event.getInteractionPoint().get().getFloorY(),
+								event.getInteractionPoint().get().getFloorZ(),
+								player.getLocation().getExtent())) && !box.building) {
 						player.sendMessage(Text.of(TextColors.RED, "You can't edit here!"));
 						event.setCancelled(true);
 						break;

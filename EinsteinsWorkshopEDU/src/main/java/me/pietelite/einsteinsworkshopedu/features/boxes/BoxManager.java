@@ -1,19 +1,23 @@
 package me.pietelite.einsteinsworkshopedu.features.boxes;
 
-import me.pietelite.einsteinsworkshopedu.EWEDUPlugin;
+import com.flowpowered.math.vector.Vector3i;
+import me.pietelite.einsteinsworkshopedu.EweduPlugin;
+import me.pietelite.einsteinsworkshopedu.tools.EweduElementManager;
 import me.pietelite.einsteinsworkshopedu.tools.SimpleLocation;
+import org.spongepowered.api.item.ItemType;
+import org.spongepowered.api.item.ItemTypes;
 
 import java.util.HashMap;
-import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
-public class BoxManager {
+public class BoxManager extends EweduElementManager<Box> {
 
-    private List<Box> boxes;
-    final private EWEDUPlugin plugin;
+    private static final String BOXES_FILE_NAME = "boxes.txt";
+    private static final String DEFAULT_BOXES_ASSET_FILE = "default_boxes.txt";
+
     private String wandItemName;
 
-    final private BoxDataHandler boxDataHandler;
 
     public static final Box NONE = new Box(
             null,
@@ -25,23 +29,42 @@ public class BoxManager {
     private HashMap<UUID, SimpleLocation> position1Map = new HashMap<>();
     private HashMap<UUID, SimpleLocation> position2Map = new HashMap<>();
 
-    public BoxManager(EWEDUPlugin plugin) {
-        this.plugin = plugin;
-        this.boxDataHandler = new BoxDataHandler(plugin);
-        this.boxes = boxDataHandler.readBoxesFile();
-    }
-
-    public List<Box> getBoxes() {
-        return boxes;
+    public BoxManager(EweduPlugin plugin) {
+        super(
+                plugin,
+                line -> {
+                    String[] tokens = line.getTokens();
+                    if (tokens.length != 9) throw new IllegalArgumentException();
+                    try {
+                        return new Box(
+                                new Vector3i(
+                                        Integer.parseInt(tokens[1]),
+                                        Integer.parseInt(tokens[2]),
+                                        Integer.parseInt(tokens[3])),
+                                new Vector3i(
+                                        Integer.parseInt(tokens[4]),
+                                        Integer.parseInt(tokens[5]),
+                                        Integer.parseInt(tokens[6])),
+                                UUID.fromString(tokens[0]),
+                                Boolean.parseBoolean(tokens[7]),
+                                Boolean.parseBoolean(tokens[8]));
+                    } catch (NumberFormatException num_e) {
+                        plugin.getLogger().error("The line could not be formed into a Box object because of a " +
+                                "NumberFormatException: " + String.join(",", tokens));
+                        return null;
+                    } catch (NoSuchElementException elem_e) {
+                        plugin.getLogger().error("The line could not be formed into a Box object because of a " +
+                                "NoSuchElementException: " + String.join(",", tokens));
+                        return null;
+                    }
+                },
+                BOXES_FILE_NAME,
+                DEFAULT_BOXES_ASSET_FILE
+        );
     }
 
     public boolean hasSelection(UUID uuid) {
         return position1Map.containsKey(uuid) && position2Map.containsKey(uuid);
-    }
-
-
-    public BoxDataHandler getBoxDataHandler() {
-        return boxDataHandler;
     }
 
     public HashMap<UUID, SimpleLocation> getPosition1Map() {
@@ -52,15 +75,20 @@ public class BoxManager {
         return position2Map;
     }
 
-    public void saveBoxes() {
-        this.boxDataHandler.writeToFile(this.boxes);
-    }
-
     public String getWandItemName() {
         return this.wandItemName;
     }
 
     public void setWandItemName(String wandItemName) {
         this.wandItemName = wandItemName;
+    }
+
+    public ItemType getWandItem() {
+        switch(wandItemName) {
+            case "minecraft:brick":
+                return ItemTypes.BRICK;
+            default:
+                return ItemTypes.BRICK;
+        }
     }
 }

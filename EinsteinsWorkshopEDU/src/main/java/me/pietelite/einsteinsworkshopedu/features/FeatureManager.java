@@ -1,21 +1,21 @@
 package me.pietelite.einsteinsworkshopedu.features;
 
-import me.pietelite.einsteinsworkshopedu.EWEDUPlugin;
+import me.pietelite.einsteinsworkshopedu.EweduPlugin;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 
 public final class FeatureManager {
 
     final private HashMap<FeatureName,Feature> features;
-    final EWEDUPlugin plugin;
+    final EweduPlugin plugin;
 
-    public FeatureManager(EWEDUPlugin plugin) {
-        features = new HashMap<FeatureName, Feature>();
+    public FeatureManager(EweduPlugin plugin) {
+        features = new HashMap<>();
         features.put(FeatureName.BOXES, new Feature("boxes"));
         features.put(FeatureName.ASSIGNMENTS, new Feature("assignments"));
         features.put(FeatureName.FREEZE, new Feature("freeze"));
+        features.put(FeatureName.HOMES, new Feature("homes"));
         this.plugin = plugin;
     }
 
@@ -33,7 +33,8 @@ public final class FeatureManager {
     public enum FeatureName {
         BOXES,
         ASSIGNMENTS,
-        FREEZE
+        FREEZE,
+        HOMES
     }
 
     public Feature getFeature(FeatureName name) {

@@ -1,19 +1,18 @@
 package me.pietelite.einsteinsworkshopedu.features.boxes;
 
-import me.pietelite.einsteinsworkshopedu.EWEDUPlugin;
+import me.pietelite.einsteinsworkshopedu.EweduPlugin;
 import me.pietelite.einsteinsworkshopedu.tools.SimpleLocation;
-import org.spongepowered.api.world.World;
 
 import java.util.HashMap;
 import java.util.UUID;
 
 public class PlayerLocationManager {
 
-    final private EWEDUPlugin plugin;
+    final private EweduPlugin plugin;
 
     private HashMap<UUID, SimpleLocation> playerLocations = new HashMap<>();
 
-    public PlayerLocationManager(EWEDUPlugin plugin) {
+    public PlayerLocationManager(EweduPlugin plugin) {
         this.plugin = plugin;
     }
 
