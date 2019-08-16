@@ -4,8 +4,8 @@
 This mod was developed for Einsteins Workshop to provide administrative features to facilitate an educational environment.
 
 ## Author
-Pieter Svenson
-Website: www.pietersvenson.com
+Pieter Svenson  
+- Website: www.pietersvenson.com
 
 ## Contact
 Discord: https://discord.gg/gJXyaU
