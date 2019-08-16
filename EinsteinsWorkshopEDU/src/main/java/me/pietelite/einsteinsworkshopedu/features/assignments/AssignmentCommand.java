@@ -4,6 +4,9 @@ import java.util.Date;
 
 import javax.annotation.Syntax;
 
+import co.aikar.commands.CommandHelp;
+import co.aikar.commands.HelpEntry;
+import co.aikar.commands.annotation.*;
 import me.pietelite.einsteinsworkshopedu.features.FeatureManager;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
@@ -12,11 +15,6 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyles;
 
-import co.aikar.commands.annotation.CommandAlias;
-import co.aikar.commands.annotation.CommandCompletion;
-import co.aikar.commands.annotation.CommandPermission;
-import co.aikar.commands.annotation.Conditions;
-import co.aikar.commands.annotation.Subcommand;
 import me.pietelite.einsteinsworkshopedu.EweduPlugin;
 import me.pietelite.einsteinsworkshopedu.EinsteinsWorkshopCommand;
 import me.pietelite.einsteinsworkshopedu.features.assignments.Assignment.BodyTooLongException;
@@ -30,16 +28,23 @@ public class AssignmentCommand extends EinsteinsWorkshopCommand {
 	
 	public AssignmentCommand(EweduPlugin plugin) {
 		super(plugin);
-		addSubCommand(new SubCommand("einsteinsworkshop.student", "/ew assignment list"));
-		addSubCommand(new SubCommand("einsteinsworkshop.student", "/ew assignment complete"));
-		addSubCommand(new SubCommand("einsteinsworkshop.instructor", "/ew assignment add <" +
-				String.join("|", EweduPlugin.getAssignmentTypes()) + "> <title...>"));
-		addSubCommand(new SubCommand("einsteinsworkshop.instructor", "/ew assignment info <id>"));
-		addSubCommand(new SubCommand("einsteinsworkshop.instructor", "/ew assignment remove <id>"));
-		addSubCommand(new SubCommand("einsteinsworkshop.instructor", "/ew assignment edit title <id> <title...>"));
-		addSubCommand(new SubCommand("einsteinsworkshop.instructor", "/ew assignment edit body <id> <body...>"));
-		addSubCommand(new SubCommand("einsteinsworkshop.instructor", "/ew assignment edit type <id> <" +
-				String.join("|", EweduPlugin.getAssignmentTypes()) + ">"));
+	}
+
+	@Default
+	@Subcommand("help")
+	public void onHelp(CommandSource source) {
+		if (source.hasPermission("einsteinsworkshop.student")) {
+			source.sendMessage(commandMessage("/ew assignment|a", "list", ""));
+			source.sendMessage(commandMessage("/ew assignment|a", "complete", ""));
+		}
+		if (source.hasPermission("einsteinsworkshop.instructor")) {
+			source.sendMessage(commandMessage("/ew assignment|a", "add <type> <title...>", ""));
+			source.sendMessage(commandMessage("/ew assignment|a", "info <id>", ""));
+			source.sendMessage(commandMessage("/ew assignment|a", "remove <id>", ""));
+			source.sendMessage(commandMessage("/ew assignment|a", "edit title <title...>", ""));
+			source.sendMessage(commandMessage("/ew assignment|a", "edit body <body...>", ""));
+			source.sendMessage(commandMessage("/ew assignment|a", "edit type <type>", ""));
+		}
 	}
 		
 	@Subcommand("list")

@@ -1,5 +1,6 @@
 package me.pietelite.einsteinsworkshopedu.listeners;
 
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.EventListener;
 import org.spongepowered.api.event.message.MessageChannelEvent;
@@ -24,9 +25,15 @@ public class ChatListener implements EventListener<MessageChannelEvent.Chat> {
 			Player player = (Player) root;
 			if (plugin.getFreezeManager().getFrozenPlayers().contains(player)) {
 				player.sendMessage(Text.of(TextColors.RED, "You cannot chat while frozen!"));
-				event.setCancelled(true);
+			} else {
+				sendModifiedMessage(player, event.getMessage());
 			}
+			event.setCancelled(true);
 		}
+	}
+
+	public void sendModifiedMessage(Player player, Text text) {
+		Sponge.getServer().getBroadcastChannel().send(Text.of("<User> ", text));
 	}
 
 }

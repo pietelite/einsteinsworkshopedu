@@ -80,9 +80,9 @@ public class EweduPlugin implements PluginContainer {
 	
 	private static final String DATA_FOLDER_NAME = "einsteinsworkshop";
 
-	/** General logger. From Sponge API. */
+	/** Default logger. From Sponge API. */
 	@Inject
-    private Logger logger;
+	private Logger logger;
 
 	/** Location of the default configuration file for this plugin. From Sponge API. */
 	@Inject
@@ -127,7 +127,7 @@ public class EweduPlugin implements PluginContainer {
 	 */
     @Listener
     public void onInitialize(GameInitializationEvent event) {
-        logger.info("Initializing EinsteinsWorkshopEdu...");
+        getLogger().info("Initializing EinsteinsWorkshopEdu...");
 
         featureManager = new FeatureManager(this);
         freezeManager = new FreezeManager(this);
@@ -157,7 +157,7 @@ public class EweduPlugin implements PluginContainer {
 
 	private void initializeConfig() {
     	if (!defaultConfig.toFile().exists()) {
-            logger.info("Generating New Configuration File...");
+			getLogger().info("Generating New Configuration File...");
             try {
                 rootNode = configManager.load();
                 ConfigurationNode featureNode = rootNode.getNode("features");
@@ -167,9 +167,9 @@ public class EweduPlugin implements PluginContainer {
                 featureNode.getNode("assignments").getNode("types").setValue(Assignment.DEFAULT_ASSIGNMENT_TYPES);
 				featureNode.getNode("boxes").getNode("wand_item").setValue(Box.DEFAULT_BOX_WAND.getName());
                 configManager.save(rootNode);
-                logger.info("New Configuration File created successfully!");
+				getLogger().info("New Configuration File created successfully!");
             } catch (IOException e) {
-                logger.warn("Exception while reading configuration", e);
+				getLogger().warn("Exception while reading configuration", e);
             }
         }
 	}
@@ -253,18 +253,17 @@ public class EweduPlugin implements PluginContainer {
      */
     @Listener
     public void onReload(GameReloadEvent event) {
-        logger.info("Reloading EinsteinsWorkshopEDU config data");
+		getLogger().info("Reloading EinsteinsWorkshopEDU config data");
         try {
             rootNode = configManager.load();
         } catch (IOException e) {
-            logger.warn("Exception while reading configuration", e);
+			getLogger().warn("Exception while reading configuration", e);
         }
-        logger.info("EinsteinsWorkshopEDU config data reloaded!");
+		getLogger().info("EinsteinsWorkshopEDU config data reloaded!");
     }
 
-    // TODO: Make a feature object for the login message
     private File loadLoginMessageFile() {
-    	logger.info("Loading Login Message File");
+		getLogger().info("Loading Login Message File");
     	
     	if (configDirectory.mkdir()) getLogger().info("EinsteinsWorkshopEDU Configuration Directory Created");
     	
@@ -288,14 +287,14 @@ public class EweduPlugin implements PluginContainer {
     private List<String> readLoginMessageFile(File file) {
         try {
             Scanner scanner = new Scanner(file);
-            List<String> lines = new LinkedList<String>();
+            List<String> lines = new LinkedList<>();
             while (scanner.hasNext()) {
                 lines.add(scanner.nextLine());
             }
             scanner.close();
             return lines;
         } catch (Exception e) {
-            logger.warn("Exception while loading", e);
+			getLogger().warn("Exception while loading", e);
             return new LinkedList<>();
         }
     }
@@ -342,7 +341,7 @@ public class EweduPlugin implements PluginContainer {
 
 	@Override
 	public String getId() {
-		return "ewedu";
+		return ID;
 	}
 
 	public File getDataDirectory() {

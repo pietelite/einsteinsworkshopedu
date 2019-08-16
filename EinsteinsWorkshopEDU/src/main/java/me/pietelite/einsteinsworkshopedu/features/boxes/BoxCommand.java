@@ -3,7 +3,8 @@ package me.pietelite.einsteinsworkshopedu.features.boxes;
 import javax.annotation.Nonnull;
 import javax.annotation.Syntax;
 
-import co.aikar.commands.annotation.Conditions;
+import co.aikar.commands.CommandHelp;
+import co.aikar.commands.annotation.*;
 import com.flowpowered.math.vector.Vector3d;
 import me.pietelite.einsteinsworkshopedu.features.FeatureManager;
 import me.pietelite.einsteinsworkshopedu.tools.SimpleLocation;
@@ -15,9 +16,6 @@ import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
-import co.aikar.commands.annotation.CommandAlias;
-import co.aikar.commands.annotation.CommandPermission;
-import co.aikar.commands.annotation.Subcommand;
 import me.pietelite.einsteinsworkshopedu.EweduPlugin;
 import me.pietelite.einsteinsworkshopedu.EinsteinsWorkshopCommand;
 import org.spongepowered.api.util.Color;
@@ -30,20 +28,25 @@ public class BoxCommand extends EinsteinsWorkshopCommand {
 
     public BoxCommand(EweduPlugin plugin) {
         super(plugin);
-        addSubCommand(new SubCommand("einsteinsworkshop.instructor", "/ew box list"));
-        addSubCommand(new SubCommand("einsteinsworkshop.instructor", "/ew box position1|pos1"));
-        addSubCommand(new SubCommand("einsteinsworkshop.instructor", "/ew box position2|pos2"));
-        addSubCommand(new SubCommand("einsteinsworkshop.instructor", "/ew box pos1"));
-        addSubCommand(new SubCommand("einsteinsworkshop.instructor", "/ew box create"));
-        addSubCommand(new SubCommand("einsteinsworkshop.instructor", "/ew box destroy <id>"));
-        addSubCommand(new SubCommand("einsteinsworkshop.instructor", "/ew box info [id]"));
-        addSubCommand(new SubCommand("einsteinsworkshop.instructor", "/ew box pos1"));
-        addSubCommand(new SubCommand("einsteinsworkshop.instructor", "/ew box edit movement <id> true|false"));
-        addSubCommand(new SubCommand("einsteinsworkshop.instructor", "/ew box edit building <id> true|false"));
-        addSubCommand(new SubCommand("einsteinsworkshop.instructor", "/ew box show <id>"));
-        addSubCommand(new SubCommand("einsteinsworkshop.instructor", "/ew box show all"));
-        addSubCommand(new SubCommand("einsteinsworkshop.instructor", "/ew box teleport|tp <id>"));
-        addSubCommand(new SubCommand("einsteinsworkshop.instructor", "/ew box wand"));
+    }
+
+    @Default
+    @Subcommand("help")
+    public void onHelp(CommandSource source) {
+        if (source.hasPermission("einsteinsworkshop.instructor")) {
+            source.sendMessage(commandMessage("/ew box|b", "list", ""));
+            source.sendMessage(commandMessage("/ew box|b", "position1|pos1", ""));
+            source.sendMessage(commandMessage("/ew box|b", "position2|pos2", ""));
+            source.sendMessage(commandMessage("/ew box|b", "create", ""));
+            source.sendMessage(commandMessage("/ew box|b", "destroy <id>", ""));
+            source.sendMessage(commandMessage("/ew box|b", "info [id]", ""));
+            source.sendMessage(commandMessage("/ew box|b", "edit movement <id> true|false", ""));
+            source.sendMessage(commandMessage("/ew box|b", "edit building <id> true|false", ""));
+            source.sendMessage(commandMessage("/ew box|b", "show <id>", ""));
+            source.sendMessage(commandMessage("/ew box|b", "show all", ""));
+            source.sendMessage(commandMessage("/ew box|b", "teleport|tp <id>", ""));
+            source.sendMessage(commandMessage("/ew box|b", "wand", ""));
+        }
     }
 
     @Subcommand("list")

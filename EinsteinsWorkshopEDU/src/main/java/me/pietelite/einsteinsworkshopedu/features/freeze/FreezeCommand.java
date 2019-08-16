@@ -2,6 +2,7 @@ package me.pietelite.einsteinsworkshopedu.features.freeze;
 
 import javax.annotation.Syntax;
 
+import co.aikar.commands.annotation.*;
 import me.pietelite.einsteinsworkshopedu.features.FeatureManager;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
@@ -9,10 +10,6 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
-import co.aikar.commands.annotation.CommandAlias;
-import co.aikar.commands.annotation.CommandCompletion;
-import co.aikar.commands.annotation.CommandPermission;
-import co.aikar.commands.annotation.Subcommand;
 import me.pietelite.einsteinsworkshopedu.EweduPlugin;
 import me.pietelite.einsteinsworkshopedu.EinsteinsWorkshopCommand;
 
@@ -28,10 +25,17 @@ public class FreezeCommand extends EinsteinsWorkshopCommand {
      */
     public FreezeCommand(EweduPlugin plugin) {
     	super(plugin);
-		addSubCommand(new SubCommand("einsteinsworkshop.instructor", "/ew freeze all|a"));
-		addSubCommand(new SubCommand("einsteinsworkshop.instructor", "/ew freeze player|p <username>"));
     }
-    
+
+    @Default
+	@Subcommand("help")
+	public void onHelp(CommandSource source) {
+		if (source.hasPermission("einsteinsworkshop.instructor")) {
+			source.sendMessage(commandMessage("/ew freeze|f", "all|a", ""));
+			source.sendMessage(commandMessage("/ew freeze|f", "player|p <player>", ""));
+		}
+	}
+
     @Subcommand("all|a")
     public void onFreezeAll(CommandSource source) {
     	if (!plugin.getFeatureManager().getFeature(FeatureManager.FeatureName.FREEZE).isEnabled) {
