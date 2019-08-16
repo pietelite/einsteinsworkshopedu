@@ -95,7 +95,7 @@ Discord: https://discord.gg/gJXyaU
     - **show**
       - **all**
         - Displays a brief border around all boxes saved
-      - **<id**
+      - **<id>**
         - Displays a brief border around the box with the specified id
     - **teleport|tp <id>**
       - Teleport yourself to the corner of a specific box *(corner is at minimum of x, y, and z coordinates)*
@@ -107,7 +107,7 @@ Discord: https://discord.gg/gJXyaU
     - Teleports you to your home, if you set 
       - **set**
         - Sets your home location to your current location
-      - **set <x y z>
+      - **set <x y z>**
         - *Permission: einsteinsworkshop.instructor*
         - If x, y, and z coordinates are specified, then sets your location to that coordinate location in the world you are in
       - **player**
