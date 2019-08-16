@@ -8,13 +8,13 @@ Pieter Svenson
 Website: www.pietersvenson.com
 
 ## Contact
-Discord:
+Discord: https://discord.gg/gJXyaU
 
 ## Permissions
 - einsteinsworkshop
-  - einsteinsworkshop.command.student
+  - einsteinsworkshop.student
     - Allows usage of student-level commands
-  - einsteinsworkshop.command.instructor
+  - einsteinsworkshop.instructor
     - Allows usage of instructor-level commands
     - Instructors must also inherit the student permission
   - einsteinsworkshop.immunity
@@ -24,18 +24,98 @@ Discord:
 
 
 ## Commands
-### Command Syntax Format
+### Command Usage Syntax
 - "|": Delimiter for a list of synonymous subcommands
-- "<foo>": Foo is a required argument
-- "[bar]": Bar is an optional argument
+- "<foo>": foo is a required argument
+- "[bar]": bar is an optional argument
+- "...": This argument can take multiple words
+- "{do, re}": *do* and *re* are the only two options
 
 ### Command Usage
 - **/einsteinsworkshop|ew**
-  - **freeze**
-    - Students cannot interact, be interacted with, or chat
-    - **all**
+  - **freeze|f**
+    *Permission: einsteinsworkshop.instructor*
+    Students cannot interact, be interacted with, or chat
+    - **all|a**
       - Freezes all students in place
       - Students who join into the world will be frozen, even if they were individually unfrozen before
-    - **player <player>**
+    - **player|p <player>**
       - Freezes a specific player
-      - Students cannot interact, be interacted with, or chat
+  - **unfreeze|uf**
+    - *Permission: einsteinsworkshop.instructor*
+    - Student can move and chat freely
+    - **all|a**
+      - Unfreezes all students
+    - **player|p <player>**
+        - Unfreezes a specific player
+  - **assignment|a**
+    - **list**
+      - *Permission: einsteinsworkshop.student*
+      Lists all assignments
+    - **complete <id>**
+      - *Permission: einsteinsworkshop.student*
+      - Completes the assignment with the given id
+    - **add <type> <title...>**
+      - *Permission: einsteinsworkshop.instructor*
+      - Add an assignment with the given title
+    - **remove <id>**
+      - *Permission: einsteinsworkshop.instructor*
+      - Remove an assignment with the given id
+    - **info <id>**
+      - *Permission: einsteinsworkshop.instructor*
+      - Get a detailed information message about the assignment with the given id
+    - **edit**
+      - *Permission: einsteinsworkshop.instructor*
+      - **title <id> <title...>**
+        - Edit the title of the assignment with the given id and title
+      - **body <id> <body...>**
+        - Edit the body of the assignment with the given id and body
+      - **type <id> <type>**
+        - Edit the type of the assignment with the given type
+  - **box**
+    - *Permission: einsteinsworkshop.instructor*
+    - **list**
+      - Returns a list of all saved boxes
+    - **position1|pos1**
+      - Sets the location of the first position for selecting a box region to your current location
+    - **position2|pos2**
+      - Sets the location of the second position for selecting a box region to your current location
+    - **create**
+      - Generates a box in the currently selected region
+    - **destroy <id>**
+      - Deletes a box with the given id
+    - **info [id]**
+      - Returns detailed information about the box with the given id
+      - If no id is given, it returns information about the box you are currently occupying
+    - **edit**
+      - **movement <id> {true,false}**
+        - Sets the student's movement ability inside the box
+      - **building <id> {true,false}**
+        - Sets the students' editing ability inside the box
+    - **show**
+      - **all**
+        - Displays a brief border around all boxes saved
+      - **<id**
+        - Displays a brief border around the box with the specified id
+    - **teleport|tp <id>**
+      - Teleport yourself to the corner of a specific box *(corner is at minimum of x, y, and z coordinates)*
+    - **wand**
+      - Gives yourself the wand associated with box position selection.
+      - By default, this is a brick. This cannot be changed at this time.
+  - **home**
+  - 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
