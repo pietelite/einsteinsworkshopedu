@@ -5,10 +5,10 @@ This mod was developed for Einsteins Workshop to provide administrative features
 
 ## Author
 Pieter Svenson  
-Website: www.pietersvenson.com
+[Website](www.pietersvenson.com)
 
 ## Contact
-Discord: https://discord.gg/gJXyaU
+[Discord](https://discord.gg/gJXyaU)
 
 ## Permissions
 - einsteinsworkshop
@@ -107,7 +107,7 @@ Discord: https://discord.gg/gJXyaU
     - Teleports you to your home, if you set 
       - **set**
         - Sets your home location to your current location
-      - **set <x y z>**
+      - **set <x> <y> <z>**
         - *Permission: einsteinsworkshop.instructor*
         - If x, y, and z coordinates are specified, then sets your location to that coordinate location in the world you are in
       - **player**
