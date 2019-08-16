@@ -103,19 +103,13 @@ Discord: https://discord.gg/gJXyaU
       - Gives yourself the wand associated with box position selection.
       - By default, this is a brick. This cannot be changed at this time.
   - **home**
-  - 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    - *Permission: einsteinsworkshop.student*
+    - Teleports you to your home, if you set 
+      - **set**
+        - Sets your home location to your current location
+      - **set <x y z>
+        - *Permission: einsteinsworkshop.instructor*
+        - If x, y, and z coordinates are specified, then sets your location to that coordinate location in the world you are in
+      - **player**
+        - *Permission: einteinsworkshop.instructor*
+        - Teleport you to the home of the specified player
