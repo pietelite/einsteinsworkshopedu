@@ -5,7 +5,7 @@ This mod was developed for Einsteins Workshop to provide administrative features
 
 ## Author
 Pieter Svenson  
-- Website: www.pietersvenson.com
+Website: www.pietersvenson.com
 
 ## Contact
 Discord: https://discord.gg/gJXyaU
