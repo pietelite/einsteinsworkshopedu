@@ -26,7 +26,7 @@ public class DocumentationCommand extends EinsteinsWorkshopCommand {
     public void onDocs(CommandSource source) {
         source.sendMessage(Text.of(
                 TextColors.GRAY,
-                "EinsteinsWorkshopEDU Documentation and Source Code: ");
+                "EinsteinsWorkshopEDU Documentation and Source Code: "));
         source.sendMessage(Text.of(
                 TextColors.AQUA,
                 "www.github.com/pietelite/einsteinsworkshopedu"));
