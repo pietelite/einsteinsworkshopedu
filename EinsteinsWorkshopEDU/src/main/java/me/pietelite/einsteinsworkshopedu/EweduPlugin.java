@@ -7,11 +7,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
+import me.pietelite.einsteinsworkshopedu.extras.DocumentationCommand;
 import me.pietelite.einsteinsworkshopedu.features.FeatureManager;
 import me.pietelite.einsteinsworkshopedu.features.boxes.Box;
 import me.pietelite.einsteinsworkshopedu.features.boxes.BoxCommand;
@@ -19,8 +17,10 @@ import me.pietelite.einsteinsworkshopedu.features.boxes.BoxManager;
 import me.pietelite.einsteinsworkshopedu.features.boxes.PlayerLocationManager;
 import me.pietelite.einsteinsworkshopedu.features.homes.HomeCommand;
 import me.pietelite.einsteinsworkshopedu.features.homes.HomeManager;
+import me.pietelite.einsteinsworkshopedu.features.mute.MuteManager;
 import me.pietelite.einsteinsworkshopedu.listeners.*;
-import me.pietelite.einsteinsworkshopedu.tools.EweduElementManager;
+import me.pietelite.einsteinsworkshopedu.features.EweduElementManager;
+import me.pietelite.einsteinsworkshopedu.tools.Feature;
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.config.ConfigDir;
@@ -105,14 +105,7 @@ public class EweduPlugin implements PluginContainer {
     
     private SpongeCommandManager commandManager;
 
-    private FeatureManager featureManager;
-
-    private FreezeManager freezeManager;
-
-    private List<EweduElementManager> elementManagers = new LinkedList<>();
-    private BoxManager boxManager;
-    private AssignmentManager assignmentManager;
-    private HomeManager homeManager;
+    private HashMap<FeatureTitle, Feature> features = new HashMap<>();
 
     private PlayerLocationManager playerLocationManager;
     
@@ -129,17 +122,14 @@ public class EweduPlugin implements PluginContainer {
     public void onInitialize(GameInitializationEvent event) {
         getLogger().info("Initializing EinsteinsWorkshopEdu...");
 
-        featureManager = new FeatureManager(this);
-        freezeManager = new FreezeManager(this);
-        assignmentManager = new AssignmentManager(this);
-        boxManager = new BoxManager(this);
+
+
         playerLocationManager = new PlayerLocationManager(this);
         
         loginMessage = readLoginMessageFile(loadLoginMessageFile());
         
-        // Load the config from the Sponge API and set the specific node values.
+        // Init the config from the Sponge API and set the specific node values.
         initializeConfig();
-        loadConfig();
         
         // Classes which other classes depend on must be initialized here. 
         
@@ -152,7 +142,12 @@ public class EweduPlugin implements PluginContainer {
 
     @Listener
 	public void onStarted(GameStartedServerEvent event) {
-		homeManager = new HomeManager(this);
+		new FreezeManager(this);
+		new AssignmentManager(this);
+		new BoxManager(this);
+    	new HomeManager(this);
+    	new MuteManager(this);
+		loadConfig();
 	}
 
 	private void initializeConfig() {
@@ -161,11 +156,11 @@ public class EweduPlugin implements PluginContainer {
             try {
                 rootNode = configManager.load();
                 ConfigurationNode featureNode = rootNode.getNode("features");
-				for (FeatureManager.Feature feature : featureManager.getFeatures()) {
-					featureNode.getNode(feature.name).getNode("enabled").setValue(true);
+				for (FeatureTitle feature : FeatureTitle.values()) {
+					featureNode.getNode(feature.name()).getNode("enabled").setValue(true);
 				}
-                featureNode.getNode("assignments").getNode("types").setValue(Assignment.DEFAULT_ASSIGNMENT_TYPES);
-				featureNode.getNode("boxes").getNode("wand_item").setValue(Box.DEFAULT_BOX_WAND.getName());
+                featureNode.getNode(FeatureTitle.ASSIGNMENTS.name()).getNode("types").setValue(Assignment.DEFAULT_ASSIGNMENT_TYPES);
+				featureNode.getNode(FeatureTitle.BOXES.name()).getNode("wand_item").setValue(Box.DEFAULT_BOX_WAND.getName());
                 configManager.save(rootNode);
 				getLogger().info("New Configuration File created successfully!");
             } catch (IOException e) {
@@ -178,16 +173,16 @@ public class EweduPlugin implements PluginContainer {
         try {
         	rootNode = configManager.load();
             ConfigurationNode featureNode = rootNode.getNode("features");
-			for (FeatureManager.Feature feature : featureManager.getFeatures()) {
-				feature.isEnabled = featureNode.getNode(feature.name).getNode("enabled").getBoolean();
+			for (FeatureTitle feature : getFeatures().keySet()) {
+				getFeatures().get(feature).isEnabled = featureNode.getNode(feature.name()).getNode("enabled").getBoolean();
 			}
-			assignmentTypes = featureNode.getNode("assignments").getNode("types").getList((object) -> {
+			assignmentTypes = featureNode.getNode(FeatureTitle.ASSIGNMENTS.name()).getNode("types").getList((object) -> {
 				if (object == null) {
 					return null;
 				} else {
 					return object.toString();}
 				});
-			this.getBoxManager().setWandItemName(featureNode.getNode("boxes").getNode("wand_item").getString());
+			((BoxManager) this.getFeatures().get(FeatureTitle.BOXES).getManager()).setWandItemName(featureNode.getNode(FeatureTitle.BOXES.name()).getNode("wand_item").getString());
 			getLogger().info("List of Valid Assignment Types: " + assignmentTypes.toString());
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -205,6 +200,7 @@ public class EweduPlugin implements PluginContainer {
     	commandManager.registerCommand(new AssignmentCommand(this));
     	commandManager.registerCommand(new BoxCommand(this));
     	commandManager.registerCommand(new HomeCommand(this));
+    	commandManager.registerCommand(new DocumentationCommand(this));
     	registerConditions();
     	registerCompletions();
     }
@@ -303,28 +299,8 @@ public class EweduPlugin implements PluginContainer {
     	return commandManager;
 	}
 
-    public FeatureManager getFeatureManager() {
-    	return featureManager;
-	}
-
-    public FreezeManager getFreezeManager() {
-    	return freezeManager;
-    }
-    
-    public List<EweduElementManager> getElementManagers() {
-    	return elementManagers;
-	}
-
-	public BoxManager getBoxManager() {
-    	return boxManager;
-	}
-
-	public AssignmentManager getAssignmentManager() {
-    	return assignmentManager;
-	}
-
-	public HomeManager getHomeManager() {
-    	return homeManager;
+	public HashMap<FeatureTitle, Feature> getFeatures() {
+    	return features;
 	}
 
 	public PlayerLocationManager getPlayerLocationManager() {
@@ -347,9 +323,19 @@ public class EweduPlugin implements PluginContainer {
 	public File getDataDirectory() {
 		return new File(configDirectory.getParentFile().getParentFile().getPath() + "/" + DATA_FOLDER_NAME);
 	}
-	
+
+
+
 	public static List<String> getAssignmentTypes() {
 		return assignmentTypes;
-	};
+	}
+
+	public enum FeatureTitle {
+		BOXES,
+		ASSIGNMENTS,
+		FREEZE,
+		HOMES,
+		MUTE
+	}
 
 }

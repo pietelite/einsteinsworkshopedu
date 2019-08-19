@@ -2,7 +2,7 @@ package me.pietelite.einsteinsworkshopedu.features.boxes;
 
 import com.flowpowered.math.vector.Vector3i;
 import me.pietelite.einsteinsworkshopedu.EweduPlugin;
-import me.pietelite.einsteinsworkshopedu.tools.EweduElementManager;
+import me.pietelite.einsteinsworkshopedu.features.EweduElementManager;
 import me.pietelite.einsteinsworkshopedu.tools.SimpleLocation;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.ItemTypes;
@@ -16,7 +16,7 @@ public class BoxManager extends EweduElementManager<Box> {
     private static final String BOXES_FILE_NAME = "boxes.txt";
     private static final String DEFAULT_BOXES_ASSET_FILE = "default_boxes.txt";
 
-    private String wandItemName;
+    private String wandItemName = ItemTypes.BRICK.getName();
 
 
     public static final Box NONE = new Box(
@@ -32,19 +32,20 @@ public class BoxManager extends EweduElementManager<Box> {
     public BoxManager(EweduPlugin plugin) {
         super(
                 plugin,
+                EweduPlugin.FeatureTitle.BOXES,
                 line -> {
                     String[] tokens = line.getTokens();
                     if (tokens.length != 9) throw new IllegalArgumentException();
                     try {
                         return new Box(
                                 new Vector3i(
-                                        Integer.parseInt(tokens[1]),
-                                        Integer.parseInt(tokens[2]),
-                                        Integer.parseInt(tokens[3])),
+                                        Math.floor(Float.parseFloat(tokens[1])),
+                                        Math.floor(Float.parseFloat(tokens[2])),
+                                                Math.floor(Float.parseFloat(tokens[3]))),
                                 new Vector3i(
-                                        Integer.parseInt(tokens[4]),
-                                        Integer.parseInt(tokens[5]),
-                                        Integer.parseInt(tokens[6])),
+                                        Math.floor(Float.parseFloat(tokens[4])),
+                                        Math.floor(Float.parseFloat(tokens[5])),
+                                        Math.floor(Float.parseFloat(tokens[6]))),
                                 UUID.fromString(tokens[0]),
                                 Boolean.parseBoolean(tokens[7]),
                                 Boolean.parseBoolean(tokens[8]));

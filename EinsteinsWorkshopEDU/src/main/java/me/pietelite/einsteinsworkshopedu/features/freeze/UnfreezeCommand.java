@@ -3,7 +3,6 @@ package me.pietelite.einsteinsworkshopedu.features.freeze;
 import javax.annotation.Syntax;
 
 import co.aikar.commands.annotation.*;
-import me.pietelite.einsteinsworkshopedu.features.FeatureManager;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
@@ -30,6 +29,10 @@ public class UnfreezeCommand extends EinsteinsWorkshopCommand {
 	@Default
 	@Subcommand("help")
 	public void onHelp(CommandSource source) {
+		if (!plugin.getFeatures().get(EweduPlugin.FeatureTitle.FREEZE).isEnabled) {
+			source.sendMessage(Text.of(TextColors.RED, "This feature has been disabled."));
+			return;
+		}
 		if (source.hasPermission("einsteinsworkshop.instructor")) {
 			source.sendMessage(commandMessage("/ew unfreeze|uf", "all|a", ""));
 			source.sendMessage(commandMessage("/ew unfreeze|uf", "player|p <player>", ""));
@@ -38,29 +41,29 @@ public class UnfreezeCommand extends EinsteinsWorkshopCommand {
 
     @Subcommand("all|a")
     public void onFreezeAll(CommandSource source) {
-    	if (!plugin.getFeatureManager().getFeature(FeatureManager.FeatureName.FREEZE).isEnabled) {
+		if (!plugin.getFeatures().get(EweduPlugin.FeatureTitle.FREEZE).isEnabled) {
 			source.sendMessage(Text.of(TextColors.RED, "This feature has been disabled."));
 			return;
 		}
     	for (Player player : Sponge.getServer().getOnlinePlayers()) {
-			if (plugin.getFreezeManager().getFrozenPlayers().remove(player)) {
+			if (((FreezeManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.FREEZE).getManager()).getFrozenPlayers().remove(player)) {
 				player.sendMessage(Text.of(TextColors.GREEN, "You have been unfrozen!"));
 			}
 		}
-    	plugin.getFreezeManager().isAllFrozen = false;
+		((FreezeManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.FREEZE).getManager()).isAllFrozen = false;
 		source.sendMessage(Utils.createFreezeAllMessage(false));
     }
     
     @Subcommand("player|p")
     @CommandCompletion("@players")
     public void onFreezePlayer(CommandSource source, String name) {
-    	if (!plugin.getFeatureManager().getFeature(FeatureManager.FeatureName.FREEZE).isEnabled) {
+		if (!plugin.getFeatures().get(EweduPlugin.FeatureTitle.FREEZE).isEnabled) {
 			source.sendMessage(Text.of(TextColors.RED, "This feature has been disabled."));
 			return;
 		}
     	for (Player onlinePlayer : Sponge.getServer().getOnlinePlayers()) {
 			if (onlinePlayer.getDisplayNameData().displayName().get().toPlain().equalsIgnoreCase(name)) {
-				if (plugin.getFreezeManager().getFrozenPlayers().remove(onlinePlayer)) {
+				if (((FreezeManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.FREEZE).getManager()).getFrozenPlayers().remove(onlinePlayer)) {
 					source.sendMessage(Utils.createFreezePlayerMessage(false, name));
 					onlinePlayer.sendMessage(Text.of(TextColors.GREEN, "You have been unfrozen!"));
 					return;

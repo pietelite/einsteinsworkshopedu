@@ -12,9 +12,9 @@ import org.spongepowered.api.text.format.TextColors;
 import javax.annotation.Syntax;
 
 @CommandAlias("einsteinsworkshop|ew")
-@Subcommand("home")
-@Syntax("/ew home [set|player]")
-@CommandPermission("einsteinsworkshop.instructor")
+@Subcommand("home|h")
+@Syntax("/ew home help")
+@CommandPermission("einsteinsworkshop.student")
 public class HomeCommand extends EinsteinsWorkshopCommand {
 
     public HomeCommand(EweduPlugin plugin) {
@@ -24,8 +24,12 @@ public class HomeCommand extends EinsteinsWorkshopCommand {
     @Default
     @Conditions("player")
     public void onDefault(CommandSource source) {
+        if (!plugin.getFeatures().get(EweduPlugin.FeatureTitle.HOMES).isEnabled) {
+            source.sendMessage(Text.of(TextColors.RED, "This feature has been disabled."));
+            return;
+        }
         Player player = (Player) source;
-        Home home = plugin.getHomeManager().getHome(player);
+        Home home = ((HomeManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.HOMES).getManager()).getHome(player);
         if (home == null) {
             player.sendMessage(Text.of(TextColors.RED, "You have not yet set a home! Use /ew home set"));
         } else {
@@ -37,10 +41,14 @@ public class HomeCommand extends EinsteinsWorkshopCommand {
     @Subcommand("set")
     @Conditions("player")
     public void onSet(CommandSource source) {
+        if (!plugin.getFeatures().get(EweduPlugin.FeatureTitle.HOMES).isEnabled) {
+            source.sendMessage(Text.of(TextColors.RED, "This feature has been disabled."));
+            return;
+        }
         Player player = (Player) source;
-        plugin.getHomeManager().removeHome(player);
-        plugin.getHomeManager().addHome(player);
-        plugin.getHomeManager().save();
+        ((HomeManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.HOMES).getManager()).removeHome(player);
+        ((HomeManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.HOMES).getManager()).addHome(player);
+        plugin.getFeatures().get(EweduPlugin.FeatureTitle.HOMES).getManager().save();
         player.sendMessage(Text.of(TextColors.GREEN, "Home set!"));
     }
 
@@ -48,10 +56,14 @@ public class HomeCommand extends EinsteinsWorkshopCommand {
     @Conditions("player")
     @CommandPermission("einsteinsworkshop.instructor")
     public void onSetLocation(CommandSource source, int x, int y, int z) {
+        if (!plugin.getFeatures().get(EweduPlugin.FeatureTitle.HOMES).isEnabled) {
+            source.sendMessage(Text.of(TextColors.RED, "This feature has been disabled."));
+            return;
+        }
         Player player = (Player) source;
-        plugin.getHomeManager().removeHome(player);
-        plugin.getHomeManager().addHome(player, x, y, z);
-        plugin.getHomeManager().save();
+        ((HomeManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.HOMES).getManager()).removeHome(player);
+        ((HomeManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.HOMES).getManager()).addHome(player, x, y, z);
+        plugin.getFeatures().get(EweduPlugin.FeatureTitle.HOMES).getManager().save();
         player.sendMessage(Text.of(TextColors.GREEN, "Home set!"));
     }
 
@@ -60,18 +72,25 @@ public class HomeCommand extends EinsteinsWorkshopCommand {
     @Conditions("player")
     @CommandPermission("einsteinsworkshop.instructor")
     public void onPlayer(CommandSource source, String username) {
+        if (!plugin.getFeatures().get(EweduPlugin.FeatureTitle.HOMES).isEnabled) {
+            source.sendMessage(Text.of(TextColors.RED, "This feature has been disabled."));
+            return;
+        }
         Player player = (Player) source;
         if (Sponge.getServer().getPlayer(username).isPresent()) {
             Player targetPlayer = Sponge.getServer().getPlayer(username).get();
-            Home home = plugin.getHomeManager().getHome(targetPlayer);
+            Home home = ((HomeManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.HOMES).getManager()).getHome(targetPlayer);
             if (home == null) {
                 player.sendMessage(Text.of(TextColors.RED, "That player has not yet set a home!"));
             } else {
-                home.teleport(player);
-                player.sendMessage(Text.of(
-                        TextColors.GREEN, "Teleported to ",
-                        TextColors.LIGHT_PURPLE, targetPlayer.getName(),
-                        TextColors.GREEN, "'s home."));
+                if (home.teleport(player)) {
+                    player.sendMessage(Text.of(
+                            TextColors.GREEN, "Teleported to ",
+                            TextColors.LIGHT_PURPLE, targetPlayer.getName(),
+                            TextColors.GREEN, "'s home."));
+                } else {
+                    player.sendMessage(Text.of(TextColors.RED, "No safe place to teleport!"));
+                }
             }
         } else {
             player.sendMessage(Text.of(TextColors.RED, "That player could not be found!"));

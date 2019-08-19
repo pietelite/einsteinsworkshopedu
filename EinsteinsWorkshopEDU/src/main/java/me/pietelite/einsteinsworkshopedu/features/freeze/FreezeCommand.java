@@ -3,7 +3,6 @@ package me.pietelite.einsteinsworkshopedu.features.freeze;
 import javax.annotation.Syntax;
 
 import co.aikar.commands.annotation.*;
-import me.pietelite.einsteinsworkshopedu.features.FeatureManager;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
@@ -15,7 +14,7 @@ import me.pietelite.einsteinsworkshopedu.EinsteinsWorkshopCommand;
 
 @CommandAlias("einsteinsworkshop|ew")
 @Subcommand("freeze|f")
-@Syntax("/ew freeze all|player")
+@Syntax("/ew freeze help")
 @CommandPermission("einsteinsworkshop.instructor")
 public class FreezeCommand extends EinsteinsWorkshopCommand {
 
@@ -30,6 +29,10 @@ public class FreezeCommand extends EinsteinsWorkshopCommand {
     @Default
 	@Subcommand("help")
 	public void onHelp(CommandSource source) {
+		if (!plugin.getFeatures().get(EweduPlugin.FeatureTitle.FREEZE).isEnabled) {
+			source.sendMessage(Text.of(TextColors.RED, "This feature has been disabled."));
+			return;
+		}
 		if (source.hasPermission("einsteinsworkshop.instructor")) {
 			source.sendMessage(commandMessage("/ew freeze|f", "all|a", ""));
 			source.sendMessage(commandMessage("/ew freeze|f", "player|p <player>", ""));
@@ -38,34 +41,34 @@ public class FreezeCommand extends EinsteinsWorkshopCommand {
 
     @Subcommand("all|a")
     public void onFreezeAll(CommandSource source) {
-    	if (!plugin.getFeatureManager().getFeature(FeatureManager.FeatureName.FREEZE).isEnabled) {
+		if (!plugin.getFeatures().get(EweduPlugin.FeatureTitle.FREEZE).isEnabled) {
 			source.sendMessage(Text.of(TextColors.RED, "This feature has been disabled."));
 			return;
 		}
     	for (Player player : Sponge.getServer().getOnlinePlayers()) {
 			if (!player.hasPermission("einsteinsworkshop.immunity")) {
-				if (!plugin.getFreezeManager().getFrozenPlayers().contains(player)) {
-					plugin.getFreezeManager().getFrozenPlayers().add(player);
+				if (!((FreezeManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.FREEZE).getManager()).getFrozenPlayers().contains(player)) {
+					((FreezeManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.FREEZE).getManager()).getFrozenPlayers().add(player);
 					player.sendMessage(Text.of(TextColors.AQUA, "You have been frozen!"));
 				}
 			}
 		}
-    	plugin.getFreezeManager().isAllFrozen = true;
+    	((FreezeManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.FREEZE).getManager()).isAllFrozen = true;
 		source.sendMessage(Utils.createFreezeAllMessage(true));
     }
     
     @Subcommand("player|p")
     @CommandCompletion("@players")
     public void onFreezePlayer(CommandSource source, String name) {
-    	if (!plugin.getFeatureManager().getFeature(FeatureManager.FeatureName.FREEZE).isEnabled) {
+		if (!plugin.getFeatures().get(EweduPlugin.FeatureTitle.FREEZE).isEnabled) {
 			source.sendMessage(Text.of(TextColors.RED, "This feature has been disabled."));
 			return;
 		}
     	for (Player onlinePlayer : Sponge.getServer().getOnlinePlayers()) {
 			if (onlinePlayer.getDisplayNameData().displayName().get().toPlain().equalsIgnoreCase(name)) {
 				if (!onlinePlayer.hasPermission("einsteinsworkshop.immunity")) {
-					if (!plugin.getFreezeManager().getFrozenPlayers().contains(onlinePlayer)) {
-						plugin.getFreezeManager().getFrozenPlayers().add(onlinePlayer);
+					if (!((FreezeManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.FREEZE).getManager()).getFrozenPlayers().contains(onlinePlayer)) {
+						((FreezeManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.FREEZE).getManager()).getFrozenPlayers().add(onlinePlayer);
 						source.sendMessage(Utils.createFreezePlayerMessage(true, name));
 						onlinePlayer.sendMessage(Text.of(TextColors.AQUA, "You have been frozen!"));
 					} else {

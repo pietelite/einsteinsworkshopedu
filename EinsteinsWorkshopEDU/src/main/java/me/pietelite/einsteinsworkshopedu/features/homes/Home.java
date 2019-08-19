@@ -5,6 +5,7 @@ import me.pietelite.einsteinsworkshopedu.tools.storage.EweduElement;
 import me.pietelite.einsteinsworkshopedu.tools.storage.StorageLine;
 import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.text.Text;
 import org.spongepowered.api.world.World;
 
 import java.util.UUID;
@@ -47,6 +48,11 @@ public class Home implements EweduElement {
                 .build();
     }
 
+    @Override
+    public Text formatReadable(int id) {
+        return Text.of(getTransform().toString());
+    }
+
     public UUID getPlayerUUID() {
         return playerUUID;
     }
@@ -55,7 +61,7 @@ public class Home implements EweduElement {
         return transform;
     }
 
-    public void teleport(Player player) {
-        player.setTransform(this.transform);
+    public boolean teleport(Player player) {
+        return player.setTransformSafely(this.transform);
     }
 }

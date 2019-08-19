@@ -2,6 +2,7 @@ package me.pietelite.einsteinsworkshopedu.listeners;
 
 import java.util.NoSuchElementException;
 
+import me.pietelite.einsteinsworkshopedu.features.freeze.FreezeManager;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.EventListener;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
@@ -36,10 +37,10 @@ public class LoginEventListener implements EventListener<ClientConnectionEvent.J
 			player.sendMessage(Text.of(line));
 		}
 		
-		if (plugin.getFreezeManager().isAllFrozen 
-				&& !plugin.getFreezeManager().getFrozenPlayers().contains(player)
+		if (((FreezeManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.FREEZE).getManager()).isAllFrozen
+				&& !((FreezeManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.FREEZE).getManager()).getFrozenPlayers().contains(player)
 				&& !player.hasPermission("einsteinsworkshop.immunity")) {
-			plugin.getFreezeManager().getFrozenPlayers().add(player);
+			((FreezeManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.FREEZE).getManager()).getFrozenPlayers().add(player);
 			player.sendMessage(Text.of(TextColors.AQUA, "You have been frozen!"));
 		}
 	}

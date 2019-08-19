@@ -139,7 +139,7 @@ public class Box implements EweduElement {
                 vector);
     }
 
-    Text formatReadable(int id) {
+    public Text formatReadable(int id) {
         return Text.of(TextColors.GRAY, "Box " + id + ".");
     }
 

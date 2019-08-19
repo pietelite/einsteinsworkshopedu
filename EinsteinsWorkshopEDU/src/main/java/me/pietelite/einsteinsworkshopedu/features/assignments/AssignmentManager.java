@@ -3,7 +3,7 @@ package me.pietelite.einsteinsworkshopedu.features.assignments;
 import me.pietelite.einsteinsworkshopedu.EweduPlugin;
 import me.pietelite.einsteinsworkshopedu.features.assignments.Assignment.BodyTooLongException;
 import me.pietelite.einsteinsworkshopedu.features.assignments.Assignment.TitleTooLongException;
-import me.pietelite.einsteinsworkshopedu.tools.EweduElementManager;
+import me.pietelite.einsteinsworkshopedu.features.EweduElementManager;
 
 public class AssignmentManager extends EweduElementManager<Assignment> {
 	
@@ -13,6 +13,7 @@ public class AssignmentManager extends EweduElementManager<Assignment> {
 	public AssignmentManager(EweduPlugin plugin) {
 		super(
 				plugin,
+				EweduPlugin.FeatureTitle.ASSIGNMENTS,
 				line -> {
 					String tokens[] = line.getTokens();
 					if (tokens.length != 4) throw new IllegalArgumentException();

@@ -34,12 +34,13 @@ public class EinsteinsWorkshopCommand extends BaseCommand {
     @HelpCommand
     public void onHelp(CommandSource source, CommandHelp help){
 		if (source.hasPermission("einsteinsworkshop.instructor")) {
-			source.sendMessage(commandMessage("/ew", "freeze", ""));
-			source.sendMessage(commandMessage("/ew", "unfreeze", ""));
-			source.sendMessage(commandMessage("/ew", "box", ""));
+			source.sendMessage(commandMessage("/ew", "freeze|f", ""));
+			source.sendMessage(commandMessage("/ew", "unfreeze|uf", ""));
+			source.sendMessage(commandMessage("/ew", "box|b", ""));
     	}
     	if (source.hasPermission("einsteinsworkshop.student"))
-			source.sendMessage(commandMessage("/ew", "assignment",""));
+			source.sendMessage(commandMessage("/ew", "assignment|a",""));
+    		source.sendMessage(commandMessage("/ew", "home|h", ""));
 	}
 
     public static Text commandMessage(String command, String subcommand, String description) {

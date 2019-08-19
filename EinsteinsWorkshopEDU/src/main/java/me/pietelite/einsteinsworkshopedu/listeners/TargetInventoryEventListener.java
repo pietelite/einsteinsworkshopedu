@@ -1,5 +1,6 @@
 package me.pietelite.einsteinsworkshopedu.listeners;
 
+import me.pietelite.einsteinsworkshopedu.features.freeze.FreezeManager;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Cancellable;
 import org.spongepowered.api.event.EventListener;
@@ -20,7 +21,7 @@ public class TargetInventoryEventListener implements EventListener<TargetInvento
 		Object root = event.getCause().root();
 		if (root instanceof Player) {
 			Player movingPlayer = (Player) root;
-			if (plugin.getFreezeManager().getFrozenPlayers().contains(movingPlayer)) {
+			if (((FreezeManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.FREEZE).getManager()).getFrozenPlayers().contains(movingPlayer)) {
 				try {
 					((Cancellable) event).setCancelled(true);
 					return;

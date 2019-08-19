@@ -1,6 +1,8 @@
 package me.pietelite.einsteinsworkshopedu.listeners;
 
 import me.pietelite.einsteinsworkshopedu.features.boxes.Box;
+import me.pietelite.einsteinsworkshopedu.features.boxes.BoxManager;
+import me.pietelite.einsteinsworkshopedu.features.freeze.FreezeManager;
 import me.pietelite.einsteinsworkshopedu.tools.SimpleLocation;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.EventListener;
@@ -27,7 +29,7 @@ public class ChangeBlockListener implements EventListener<ChangeBlockEvent> {
         Object root = event.getCause().root();
         if (root instanceof Player) {
             Player player = (Player) root;
-            if (plugin.getFreezeManager().getFrozenPlayers().contains(player)) {
+            if (((FreezeManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.FREEZE).getManager()).getFrozenPlayers().contains(player)) {
                 try {
                     event.setCancelled(true);
                     return;
@@ -37,7 +39,7 @@ public class ChangeBlockListener implements EventListener<ChangeBlockEvent> {
                 }
             }
 
-            for (Box box : plugin.getBoxManager().getElements()) {
+            for (Box box : ((BoxManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.BOXES).getManager()).getElements()) {
                 if (!box.building) {
                     try {
                         Location<World> location = event.getTransactions().get(0).getOriginal().getLocation().get();

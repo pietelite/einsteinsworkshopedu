@@ -1,47 +1,34 @@
 package me.pietelite.einsteinsworkshopedu.features;
 
 import me.pietelite.einsteinsworkshopedu.EweduPlugin;
+import me.pietelite.einsteinsworkshopedu.tools.Feature;
 
-import java.util.Collection;
-import java.util.HashMap;
+import java.util.List;
 
-public final class FeatureManager {
+public abstract class FeatureManager {
 
-    final private HashMap<FeatureName,Feature> features;
-    final EweduPlugin plugin;
+    private EweduPlugin plugin;
 
-    public FeatureManager(EweduPlugin plugin) {
-        features = new HashMap<>();
-        features.put(FeatureName.BOXES, new Feature("boxes"));
-        features.put(FeatureName.ASSIGNMENTS, new Feature("assignments"));
-        features.put(FeatureName.FREEZE, new Feature("freeze"));
-        features.put(FeatureName.HOMES, new Feature("homes"));
+    public FeatureManager(EweduPlugin plugin, EweduPlugin.FeatureTitle title) {
         this.plugin = plugin;
+        addFeature(title);
     }
 
-    public class Feature {
-
-        public boolean isEnabled;
-        public String name;
-
-        Feature(String name) {
-            this.name = name;
-        }
-
+    private void addFeature(EweduPlugin.FeatureTitle title) {
+        plugin.getFeatures().put(title, new Feature(title.name(), this));
     }
 
-    public enum FeatureName {
-        BOXES,
-        ASSIGNMENTS,
-        FREEZE,
-        HOMES
+    public void save() {
+        // To be overwritten
     }
 
-    public Feature getFeature(FeatureName name) {
-        return features.get(name);
+    public void loadData() {
+        // To be overwritten
     }
 
-    public Collection<Feature> getFeatures() {
-        return features.values();
+    public List<? extends Object> getElements() {
+        return null;
+        // To be overwritten
     }
+
 }

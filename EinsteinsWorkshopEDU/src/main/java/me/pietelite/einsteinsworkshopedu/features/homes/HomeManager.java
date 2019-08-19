@@ -2,7 +2,7 @@ package me.pietelite.einsteinsworkshopedu.features.homes;
 
 import com.flowpowered.math.vector.Vector3d;
 import me.pietelite.einsteinsworkshopedu.EweduPlugin;
-import me.pietelite.einsteinsworkshopedu.tools.EweduElementManager;
+import me.pietelite.einsteinsworkshopedu.features.EweduElementManager;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 
@@ -19,6 +19,7 @@ public class HomeManager extends EweduElementManager<Home> {
     public HomeManager(EweduPlugin plugin) {
         super(
                 plugin,
+                EweduPlugin.FeatureTitle.HOMES,
                 line -> {
                     String tokens[] = line.getTokens();
                     if (tokens.length != 8) throw new IllegalArgumentException();
