@@ -51,8 +51,12 @@ public class Exporter<P extends EweduElement> {
                 plugin.getAsset(defaultAssetName).get().copyToFile(filePath, true);
             } else {
                 File file = filePath.toFile();
-                file.delete();
-                file.createNewFile();
+                if (!file.delete()) {
+                    plugin.getLogger().error("Could not delete '" + filePath.getFileName() + "' when saving a new version of the file.");
+                }
+                if (!file.createNewFile()) {
+                    plugin.getLogger().error("Could not create a new file called '" + filePath.getFileName() + "' to save information.");
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();

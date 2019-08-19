@@ -29,6 +29,6 @@ public class DocumentationCommand extends EinsteinsWorkshopCommand {
                 "EinsteinsWorkshopEDU Documentation and Source Code: "));
         source.sendMessage(Text.of(
                 TextColors.AQUA,
-                "www.github.com/pietelite/einsteinsworkshopedu"));
+                EweduPlugin.DOCUMENTATION_LINK));
     }
 }

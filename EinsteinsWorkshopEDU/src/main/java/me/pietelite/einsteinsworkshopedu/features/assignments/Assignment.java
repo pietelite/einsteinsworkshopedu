@@ -16,51 +16,46 @@ import org.spongepowered.api.text.format.TextStyles;
 
 public class Assignment implements EweduElement {
 
-	public static final int MAXIMUM_TITLE_LENGTH = 30;
-	public static final int MAXIMUM_BODY_LENGTH = 200;
+	static final int MAXIMUM_TITLE_LENGTH = 30;
+	static final int MAXIMUM_BODY_LENGTH = 200;
 	
 	private static final TextColor DEFAULT_TITLE_COLOR = TextColors.RED;
 	private static final TextColor DEFAULT_BODY_COLOR = TextColors.WHITE;
 	
 	public static final List<String> DEFAULT_ASSIGNMENT_TYPES = Arrays.asList("lesson", "challenge");
-	
-	public static final String DATA_REGEX = ";";
-	
+
 	private Text title = Text.EMPTY;
 	private Text body = Text.EMPTY;
 	private Date timestamp;
 	private String type;
 	
-	private List<Player> playersCompleted = new LinkedList<Player>();
+	private List<Player> playersCompleted = new LinkedList<>();
 	
-	public Assignment(String type, String title) throws TitleTooLongException, IllegalArgumentException {
+	Assignment(String type, String title) throws TitleTooLongException, IllegalArgumentException {
 		this.setType(type.toUpperCase());
 		this.setTitle(title);
 		this.timestamp = new Date();
 	}
 	
-	public Assignment(String type, String unixTime, String title, String body) throws TitleTooLongException, BodyTooLongException, IllegalArgumentException {
+	Assignment(String type, String unixTime, String title, String body) throws TitleTooLongException, BodyTooLongException, IllegalArgumentException {
 		this(type, title);
 		this.setBody(Text.of(DEFAULT_BODY_COLOR, body));
 		this.setTimestamp(new Date(Long.parseLong(unixTime)));
 	}
-
-	public Text getTitle() {
-		return title;
-	}
 	
-	public Text getCompletableTitle(int id) {
+	Text getCompletableTitle(int id) {
 		return Text.builder(title, title.toPlain())
 				.onHover(TextActions.showText(Text.of(TextColors.LIGHT_PURPLE, "Click here to toggle completion of this assignment")))
 				.onClick(TextActions.runCommand("/einsteinsworkshop assignment complete " + id))
 				.build();
 	}
 
-	public void setTitle(Text title) throws TitleTooLongException {
+	private void setTitle(Text title) throws TitleTooLongException {
 		if (title.toPlain().length() > MAXIMUM_TITLE_LENGTH) throw new TitleTooLongException();
 		this.title = title;
 	}
-	public void setTitle(String title) throws TitleTooLongException {
+
+	void setTitle(String title) throws TitleTooLongException {
 		setTitle(Text.builder(title)
 					.color(DEFAULT_TITLE_COLOR)
 					.style(TextStyles.UNDERLINE)
@@ -68,32 +63,24 @@ public class Assignment implements EweduElement {
 					);
 	}
 
-	public Text getBody() {
-		return body;
-	}
-
-	public void setBody(Text body) throws BodyTooLongException {
+	private void setBody(Text body) throws BodyTooLongException {
 		if (body.toPlain().length() > MAXIMUM_BODY_LENGTH) throw new BodyTooLongException();
 		this.body = body;
 	}
 	
-	public void setBody(String body) throws BodyTooLongException {
+	void setBody(String body) throws BodyTooLongException {
 		setBody(Text.of(DEFAULT_BODY_COLOR, body));
 	}
-
-	public Date getTimestamp() {
-		return timestamp;
-	}
 	
-	public void setTimestamp(Date date) {
+	void setTimestamp(Date date) {
 		this.timestamp = date;
 	}
 	
-	public List<Player> getPlayersCompleted() {
+	List<Player> getPlayersCompleted() {
 		return this.playersCompleted;
 	}
 	
-	public String[] getPlayersCompletedNames() {
+	private String[] getPlayersCompletedNames() {
 		String[] output = new String[playersCompleted.size()];
 		for (int i = 0; i < playersCompleted.size(); i++) {
 			output[i] = playersCompleted.get(i).getName();
@@ -101,17 +88,12 @@ public class Assignment implements EweduElement {
 		return output;
 	}
 
-	public String getType() {
-		return type;
-	}
-
-	public Assignment setType(String type) throws IllegalArgumentException {
+	void setType(String type) throws IllegalArgumentException {
 		this.type = type.toLowerCase();
-		return this;
 	}
 	
 	public Text formatReadable(int id) {
-		return Text.builder(String.valueOf(id) + ". ").color(TextColors.RED)
+		return Text.builder(id + ". ").color(TextColors.RED)
 				.append(Text.of(TextColors.GRAY, "[",
 						Text.of(TextColors.AQUA, TextStyles.ITALIC, type.toUpperCase()),
 						"] "))
@@ -121,8 +103,8 @@ public class Assignment implements EweduElement {
 				.build();
 	}
 	
-	public Text formatReadableVerbose(int id) {
-		return Text.builder(String.valueOf(id) + ". ").color(TextColors.RED)
+	Text formatReadableVerbose(int id) {
+		return Text.builder(id + ". ").color(TextColors.RED)
 				.append(Text.of(TextColors.GRAY, "[",
 						Text.of(TextColors.AQUA, TextStyles.ITALIC, type.toUpperCase()),
 						"] "))
@@ -144,11 +126,11 @@ public class Assignment implements EweduElement {
 				.build();
 	}
 
-	public final class TitleTooLongException extends Exception {
+	static final class TitleTooLongException extends Exception {
 		private static final long serialVersionUID = 1L;
 	}
 	
-	public final class BodyTooLongException extends Exception {
+	static final class BodyTooLongException extends Exception {
 		private static final long serialVersionUID = 1L;
 	}
 	

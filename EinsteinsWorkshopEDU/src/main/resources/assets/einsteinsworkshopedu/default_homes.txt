@@ -1,0 +1,3 @@
+# This is where all home data is held for the server.
+# Use '#' for commenting.
+# Do not edit this unless you are sure you know what you are doing.

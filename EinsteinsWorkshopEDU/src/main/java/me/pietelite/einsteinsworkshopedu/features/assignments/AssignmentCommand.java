@@ -7,7 +7,6 @@ import java.util.List;
 import javax.annotation.Syntax;
 
 import co.aikar.commands.annotation.*;
-import me.pietelite.einsteinsworkshopedu.features.EweduElementManager;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
@@ -35,15 +34,15 @@ public class AssignmentCommand extends EinsteinsWorkshopCommand {
 	public void onHelp(CommandSource source) {
 		if (source.hasPermission("einsteinsworkshop.student")) {
 			source.sendMessage(commandMessage("/ew assignment|a", "list", ""));
-			source.sendMessage(commandMessage("/ew assignment|a", "complete", ""));
+			source.sendMessage(commandMessage("/ew assignment|a", "complete <id>", ""));
 		}
 		if (source.hasPermission("einsteinsworkshop.instructor")) {
 			source.sendMessage(commandMessage("/ew assignment|a", "add <type> <title...>", ""));
 			source.sendMessage(commandMessage("/ew assignment|a", "info <id>", ""));
 			source.sendMessage(commandMessage("/ew assignment|a", "remove <id>", ""));
-			source.sendMessage(commandMessage("/ew assignment|a", "edit title <title...>", ""));
-			source.sendMessage(commandMessage("/ew assignment|a", "edit body <body...>", ""));
-			source.sendMessage(commandMessage("/ew assignment|a", "edit type <type>", ""));
+			source.sendMessage(commandMessage("/ew assignment|a", "edit title <id> <title...>", ""));
+			source.sendMessage(commandMessage("/ew assignment|a", "edit body <id> <body...>", ""));
+			source.sendMessage(commandMessage("/ew assignment|a", "edit type <id> <type>", ""));
 		}
 	}
 		
@@ -229,13 +228,13 @@ public class AssignmentCommand extends EinsteinsWorkshopCommand {
 		}
 	}
 
-	private Text invalidAssignmentType(CommandSource source) {
+	private void invalidAssignmentType(CommandSource source) {
 		Text output = Text.of(TextColors.RED, "Valid assignment types are: ");
 		List<Text> assignmentTypeText = new LinkedList<>();
-		for (String type : plugin.getAssignmentTypes()) {
+		for (String type : EweduPlugin.getAssignmentTypes()) {
 			assignmentTypeText.add(Text.of(TextColors.LIGHT_PURPLE, type));
 		}
-		return output.concat(Text.joinWith(Text.of(TextColors.RED, ","), assignmentTypeText));
+		source.sendMessage(output.concat(Text.joinWith(Text.of(TextColors.RED, ","), assignmentTypeText)));
 	}
 
 }

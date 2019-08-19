@@ -32,7 +32,7 @@ public class Box implements EweduElement {
     @Override
     public StorageLine toStorageLine() {
         return StorageLine.builder()
-                .addItem(this.getWorld().getUniqueId().toString())
+                .addItem(Objects.requireNonNull(this.getWorld()).getUniqueId().toString())
                 .addItem(this.position1.getX())
                 .addItem(this.position1.getY())
                 .addItem(this.position1.getZ())
@@ -49,7 +49,7 @@ public class Box implements EweduElement {
         POSITION2
     }
 
-    Box(Vector3i position1, Vector3i position2, UUID worldUUID) {
+    private Box(Vector3i position1, Vector3i position2, UUID worldUUID) {
         this.position1 = position1;
         this.position2 = position2;
         this.worldUUID = worldUUID;
@@ -65,10 +65,6 @@ public class Box implements EweduElement {
         this.movement = movement;
     }
 
-    Box(Vector3i position1, Vector3i position2, World world, boolean building, boolean movement) {
-        this(position1, position2, world.getUniqueId(), building, movement);
-    }
-
     public boolean contains(SimpleLocation simpleLocation) {
         return  getXMin() - LOCATION_CONDITION_OFFSET <= simpleLocation.getBlockX() &&
                 getXMax() + LOCATION_CONDITION_OFFSET >= simpleLocation.getBlockX() &&
@@ -76,15 +72,15 @@ public class Box implements EweduElement {
                 getYMax() + LOCATION_CONDITION_OFFSET >= simpleLocation.getBlockY() &&
                 getZMin() - LOCATION_CONDITION_OFFSET <= simpleLocation.getBlockZ() &&
                 getZMax() + LOCATION_CONDITION_OFFSET>= simpleLocation.getBlockZ() &&
-                getWorld().equals(simpleLocation.getWorld());
+                Objects.equals(getWorld(), simpleLocation.getWorld());
     }
 
     public boolean contains(Player player) {
         return contains(new SimpleLocation(player.getTransform().getLocation().getBlockPosition(), player.getWorld()));
     }
 
-    public boolean isOverlapping(Box other) {
-        if (!this.getWorld().equals(other.getWorld())) {
+    boolean isOverlapping(Box other) {
+        if (!Objects.equals(this.getWorld(), other.getWorld())) {
             return false;
         }
         for (Vector3d vector : getCorners()) {
@@ -151,7 +147,7 @@ public class Box implements EweduElement {
                 .build();
     }
 
-    public int getXMin() {
+    int getXMin() {
         return Math.min(this.position1.getX(), this.position2.getX());
     }
 
@@ -159,7 +155,7 @@ public class Box implements EweduElement {
         return Math.max(this.position1.getX(), this.position2.getX());
     }
 
-    public int getYMin() {
+    int getYMin() {
         return Math.min(this.position1.getY(), this.position2.getY());
     }
 
@@ -167,7 +163,7 @@ public class Box implements EweduElement {
         return Math.max(this.position1.getY(), this.position2.getY());
     }
 
-    public int getZMin() {
+    int getZMin() {
         return Math.min(this.position1.getZ(), this.position2.getZ());
     }
 
@@ -175,7 +171,7 @@ public class Box implements EweduElement {
         return Math.max(this.position1.getZ(), this.position2.getZ());
     }
 
-    public World getWorld() {
+    private World getWorld() {
         try {
             return Sponge.getServer().getWorld(worldUUID).get();
         } catch (NoSuchElementException e) {

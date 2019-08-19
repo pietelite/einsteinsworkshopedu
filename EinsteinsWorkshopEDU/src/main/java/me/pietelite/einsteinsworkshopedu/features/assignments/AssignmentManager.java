@@ -15,7 +15,7 @@ public class AssignmentManager extends EweduElementManager<Assignment> {
 				plugin,
 				EweduPlugin.FeatureTitle.ASSIGNMENTS,
 				line -> {
-					String tokens[] = line.getTokens();
+					String[] tokens = line.getTokens();
 					if (tokens.length != 4) throw new IllegalArgumentException();
 					try {
 						return new Assignment(tokens[0],

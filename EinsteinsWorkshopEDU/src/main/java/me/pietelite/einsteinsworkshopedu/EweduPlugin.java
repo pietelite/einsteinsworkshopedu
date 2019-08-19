@@ -10,7 +10,6 @@ import java.nio.file.Paths;
 import java.util.*;
 
 import me.pietelite.einsteinsworkshopedu.extras.DocumentationCommand;
-import me.pietelite.einsteinsworkshopedu.features.FeatureManager;
 import me.pietelite.einsteinsworkshopedu.features.boxes.Box;
 import me.pietelite.einsteinsworkshopedu.features.boxes.BoxCommand;
 import me.pietelite.einsteinsworkshopedu.features.boxes.BoxManager;
@@ -19,9 +18,7 @@ import me.pietelite.einsteinsworkshopedu.features.homes.HomeCommand;
 import me.pietelite.einsteinsworkshopedu.features.homes.HomeManager;
 import me.pietelite.einsteinsworkshopedu.features.mute.MuteManager;
 import me.pietelite.einsteinsworkshopedu.listeners.*;
-import me.pietelite.einsteinsworkshopedu.features.EweduElementManager;
 import me.pietelite.einsteinsworkshopedu.tools.Feature;
-import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.config.DefaultConfig;
@@ -33,6 +30,7 @@ import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.event.entity.TargetEntityEvent;
 import org.spongepowered.api.event.game.GameReloadEvent;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
+import org.spongepowered.api.event.game.state.GameLoadCompleteEvent;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
 import org.spongepowered.api.event.item.inventory.TargetInventoryEvent;
 import org.spongepowered.api.event.message.MessageChannelEvent;
@@ -77,31 +75,26 @@ public class EweduPlugin implements PluginContainer {
 	static final String ID = "einsteinsworkshopedu";
 	
 	private static final String LOG_IN_MESSAGE_FILE_NAME = "log_in_message.txt";
-	
-	private static final String DATA_FOLDER_NAME = "einsteinsworkshop";
-
-	/** Default logger. From Sponge API. */
-	@Inject
-	private Logger logger;
+	public static final String DOCUMENTATION_LINK = "https://github.com/pietelite/einsteinsworkshopedu";
 
 	/** Location of the default configuration file for this plugin. From Sponge API. */
 	@Inject
     @DefaultConfig(sharedRoot = false)
-    private Path defaultConfig;
+	private Path defaultConfig;
 
 	/** Configuration manager of the configuration file. From Sponge API. */
 	@Inject
     @DefaultConfig(sharedRoot = false)
-    private ConfigurationLoader<CommentedConfigurationNode> configManager;
+	private ConfigurationLoader<CommentedConfigurationNode> configManager;
     /** The root node of the configuration file, using the configuration manager. */
     private ConfigurationNode rootNode;
     
     @Inject
     @ConfigDir(sharedRoot = false)
-    private File configDirectory;
+	private File configDirectory;
     
     @Inject
-    private PluginContainer container;
+	private PluginContainer container;
     
     private SpongeCommandManager commandManager;
 
@@ -112,6 +105,9 @@ public class EweduPlugin implements PluginContainer {
     private List<String> loginMessage;
 
     private static List<String> assignmentTypes;
+
+	public EweduPlugin() {
+	}
 
 	/**
 	 * Run initialization sequence before the game starts.
@@ -125,11 +121,13 @@ public class EweduPlugin implements PluginContainer {
 
 
         playerLocationManager = new PlayerLocationManager(this);
-        
-        loginMessage = readLoginMessageFile(loadLoginMessageFile());
-        
+
         // Init the config from the Sponge API and set the specific node values.
         initializeConfig();
+		loginMessage = readLoginMessageFile(loadLoginMessageFile());
+		if (!this.getDataDirectory().mkdir()) {
+			getLogger().error("The data directory could not be created.");
+		}
         
         // Classes which other classes depend on must be initialized here. 
         
@@ -258,6 +256,12 @@ public class EweduPlugin implements PluginContainer {
 		getLogger().info("EinsteinsWorkshopEDU config data reloaded!");
     }
 
+    @Listener
+	public void onGameLoadCompleteEvent(GameLoadCompleteEvent event) {
+    	getLogger().info("Find documentation here: ");
+    	getLogger().info(DOCUMENTATION_LINK);
+	}
+
     private File loadLoginMessageFile() {
 		getLogger().info("Loading Login Message File");
     	
@@ -295,10 +299,6 @@ public class EweduPlugin implements PluginContainer {
         }
     }
 
-    public SpongeCommandManager getCommandManager() {
-    	return commandManager;
-	}
-
 	public HashMap<FeatureTitle, Feature> getFeatures() {
     	return features;
 	}
@@ -307,27 +307,24 @@ public class EweduPlugin implements PluginContainer {
 		return playerLocationManager;
 	}
 
-    public Logger getLogger() {
-    	return logger;
-    }
-    
     public List<String> getLoginMessage() {
     	return loginMessage;
     }
 
-	@Override
-	public String getId() {
-		return ID;
-	}
-
 	public File getDataDirectory() {
-		return new File(configDirectory.getParentFile().getParentFile().getPath() + "/" + DATA_FOLDER_NAME);
+		return new File(configDirectory.getParentFile().getParentFile().getPath() + "/" + ID);
 	}
 
 
 
 	public static List<String> getAssignmentTypes() {
 		return assignmentTypes;
+	}
+
+	@Override
+	@SuppressWarnings("all")
+	public String getId() {
+		return ID;
 	}
 
 	public enum FeatureTitle {

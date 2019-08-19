@@ -1,20 +1,13 @@
 package me.pietelite.einsteinsworkshopedu;
 
-import co.aikar.commands.annotation.Conditions;
-import org.spongepowered.api.command.CommandSource;
-import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
-
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.CommandHelp;
 import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.Default;
 import co.aikar.commands.annotation.HelpCommand;
-
-import java.util.LinkedList;
-import java.util.List;
-import java.util.function.Function;
+import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.format.TextColors;
 
 @CommandAlias("einsteinsworkshop|ew")
 public class EinsteinsWorkshopCommand extends BaseCommand {
@@ -43,7 +36,7 @@ public class EinsteinsWorkshopCommand extends BaseCommand {
     		source.sendMessage(commandMessage("/ew", "home|h", ""));
 	}
 
-    public static Text commandMessage(String command, String subcommand, String description) {
+    protected static Text commandMessage(String command, String subcommand, String description) {
     	return Text.builder(command).color(TextColors.GRAY)
 				.append(Text.of(" "))
 				.append(Text.of(TextColors.AQUA, subcommand))
