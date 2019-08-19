@@ -72,7 +72,7 @@ Pieter Svenson
         - Edit the body of the assignment with the given id and body
       - **type <id> <type>**
         - Edit the type of the assignment with the given type
-  - **box**
+  - **box|b**
     - *Permission: einsteinsworkshop.instructor*
     - **list**
       - Returns a list of all saved boxes
@@ -102,7 +102,7 @@ Pieter Svenson
     - **wand**
       - Gives yourself the wand associated with box position selection.
       - By default, this is a brick. This cannot be changed at this time.
-  - **home**
+  - **home|h**
     - *Permission: einsteinsworkshop.student*
     - Teleports you to your home, if you set 
       - **set**
@@ -113,3 +113,6 @@ Pieter Svenson
       - **player**
         - *Permission: einteinsworkshop.instructor*
         - Teleport you to the home of the specified player
+  - **documentation|docs**
+    - *Permission: einsteinsworkshop.instructor*
+    - Gives you a link to the documentation page
