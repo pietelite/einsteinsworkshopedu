@@ -3,7 +3,7 @@ package me.pietelite.einsteinsworkshopedu.features.mute;
 import co.aikar.commands.annotation.*;
 import me.pietelite.einsteinsworkshopedu.EinsteinsWorkshopCommand;
 import me.pietelite.einsteinsworkshopedu.EweduPlugin;
-import me.pietelite.einsteinsworkshopedu.features.freeze.Utils;
+import me.pietelite.einsteinsworkshopedu.tools.chat.ClickableMessage;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
@@ -47,14 +47,23 @@ public class MuteCommand extends EinsteinsWorkshopCommand {
         }
         for (Player player : Sponge.getServer().getOnlinePlayers()) {
             if (!player.hasPermission("einsteinsworkshop.immunity")) {
-                if (!((MuteManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.MUTE).getManager()).getMutedPlayers().contains(player)) {
-                    ((MuteManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.MUTE).getManager()).getMutedPlayers().add(player);
-                    player.sendMessage(Text.of(TextColors.AQUA, "You have been frozen!"));
+                if (!((MuteManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.MUTE).getManager()).getMutedPlayers().contains(player.getUniqueId())) {
+                    /* TODO
+                     * I want to add the player to the the list of muted players so the server knows that this person is muted
+                     * Tell the player that they are muted!
+                     */
+                    ((MuteManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.MUTE).getManager()).getMutedPlayers().add(player.getUniqueId());
+                    player.sendMessage(Text.of(TextColors.RED, "you fool you have been muted"));
                 }
             }
         }
         ((MuteManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.MUTE).getManager()).isAllMuted = true;
-        source.sendMessage(Utils.createFreezeAllMessage(true));
+        source.sendMessage(
+                ClickableMessage
+                        .builder(Text.of(TextColors.AQUA, "All players have been muted"))
+                        .addClickable("Unmute", "/ew um all", Text.of(TextColors.LIGHT_PURPLE, "Unmute all players"))
+                        .build()
+                        .getText());
     }
 
     @Subcommand("player|p")
@@ -65,17 +74,29 @@ public class MuteCommand extends EinsteinsWorkshopCommand {
             return;
         }
         for (Player onlinePlayer : Sponge.getServer().getOnlinePlayers()) {
-            if (onlinePlayer.getDisplayNameData().displayName().get().toPlain().equalsIgnoreCase(name)) {
+            if (onlinePlayer.getName().equalsIgnoreCase(name)) {
                 if (!onlinePlayer.hasPermission("einsteinsworkshop.immunity")) {
-                    if (!((MuteManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.MUTE).getManager()).getMutedPlayers().contains(onlinePlayer)) {
-                        ((MuteManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.MUTE).getManager()).getMutedPlayers().add(onlinePlayer);
-                        source.sendMessage(Utils.createFreezePlayerMessage(true, name));
-                        onlinePlayer.sendMessage(Text.of(TextColors.AQUA, "You have been frozen!"));
+                    if (!((MuteManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.MUTE).getManager()).getMutedPlayers().contains(onlinePlayer.getUniqueId())) {
+                        /* TODO
+                         * I want to add the player to the the list of muted players so the server knows that this person is muted
+                         * Tell the player that they are muted!
+                         */
+                        ((MuteManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.MUTE).getManager()).getMutedPlayers().add(onlinePlayer.getUniqueId());
+                        onlinePlayer.sendMessage(Text.of(TextColors.RED, "you fool you have been muted"));
+                        source.sendMessage(
+                                ClickableMessage
+                                        .builder(Text.of(TextColors.AQUA, onlinePlayer.getName() + " has been muted"))
+                                        .addClickable("Unmute", "/ew um p " + onlinePlayer.getName(),
+                                                Text.of(TextColors.LIGHT_PURPLE, "Unmute " + onlinePlayer.getName()))
+                                        .addClickable("Unmute All", "/ew um a",
+                                                Text.of(TextColors.LIGHT_PURPLE, "Unmute all players"))
+                                        .build()
+                                        .getText());
                     } else {
-                        source.sendMessage(Text.of(TextColors.RED, "That player is already frozen!"));
+                        source.sendMessage(Text.of(TextColors.RED, "That player is already muted!"));
                     }
                 } else {
-                    source.sendMessage(Text.of(TextColors.RED, "This player cannot be frozen!"));
+                    source.sendMessage(Text.of(TextColors.RED, "This player cannot be muted!"));
                 }
                 return;
             }

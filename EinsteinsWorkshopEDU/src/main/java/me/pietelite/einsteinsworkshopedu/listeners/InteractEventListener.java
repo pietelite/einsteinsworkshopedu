@@ -29,7 +29,7 @@ public class InteractEventListener implements EventListener<InteractEvent> {
 		Object root = event.getCause().root();
 		if (root instanceof Player) {
 			Player player = (Player) root;
-			if (((FreezeManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.FREEZE).getManager()).getFrozenPlayers().contains(player)) {
+			if (((FreezeManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.FREEZE).getManager()).getFrozenPlayers().contains(player.getUniqueId())) {
 				try {
 					event.setCancelled(true);
 					return;

@@ -21,7 +21,7 @@ public class TargetInventoryEventListener implements EventListener<TargetInvento
 		Object root = event.getCause().root();
 		if (root instanceof Player) {
 			Player movingPlayer = (Player) root;
-			if (((FreezeManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.FREEZE).getManager()).getFrozenPlayers().contains(movingPlayer)) {
+			if (((FreezeManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.FREEZE).getManager()).getFrozenPlayers().contains(movingPlayer.getUniqueId())) {
 				try {
 					((Cancellable) event).setCancelled(true);
 					return;

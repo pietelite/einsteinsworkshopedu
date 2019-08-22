@@ -26,7 +26,7 @@ public class LoginEventListener implements EventListener<ClientConnectionEvent.J
 		try {
 			player = event.getTargetEntity();
 		} catch (NoSuchElementException e) {
-			plugin.getLogger().warn("A playing logging in could not be accessed.");
+			plugin.getLogger().error("A player logging in could not be accessed.");
 			return;
 		}
 		player.sendMessage(Text.builder("Welcome to the ").color(TextColors.LIGHT_PURPLE)
@@ -37,10 +37,7 @@ public class LoginEventListener implements EventListener<ClientConnectionEvent.J
 			player.sendMessage(Text.of(line));
 		}
 		
-		if (((FreezeManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.FREEZE).getManager()).isAllFrozen
-				&& !((FreezeManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.FREEZE).getManager()).getFrozenPlayers().contains(player)
-				&& !player.hasPermission("einsteinsworkshop.immunity")) {
-			((FreezeManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.FREEZE).getManager()).getFrozenPlayers().add(player);
+		if (((FreezeManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.FREEZE).getManager()).getFrozenPlayers().contains(player.getUniqueId())) {
 			player.sendMessage(Text.of(TextColors.AQUA, "You have been frozen!"));
 		}
 	}

@@ -16,7 +16,9 @@ import me.pietelite.einsteinsworkshopedu.features.boxes.BoxManager;
 import me.pietelite.einsteinsworkshopedu.features.boxes.PlayerLocationManager;
 import me.pietelite.einsteinsworkshopedu.features.homes.HomeCommand;
 import me.pietelite.einsteinsworkshopedu.features.homes.HomeManager;
+import me.pietelite.einsteinsworkshopedu.features.mute.MuteCommand;
 import me.pietelite.einsteinsworkshopedu.features.mute.MuteManager;
+import me.pietelite.einsteinsworkshopedu.features.mute.UnmuteCommand;
 import me.pietelite.einsteinsworkshopedu.listeners.*;
 import me.pietelite.einsteinsworkshopedu.tools.Feature;
 import org.spongepowered.api.Sponge;
@@ -126,7 +128,7 @@ public class EweduPlugin implements PluginContainer {
         initializeConfig();
 		loginMessage = readLoginMessageFile(loadLoginMessageFile());
 		if (!this.getDataDirectory().mkdir()) {
-			getLogger().error("The data directory could not be created.");
+			getLogger().info("The data directory could not be created. Is it already there?");
 		}
         
         // Classes which other classes depend on must be initialized here. 
@@ -199,6 +201,8 @@ public class EweduPlugin implements PluginContainer {
     	commandManager.registerCommand(new BoxCommand(this));
     	commandManager.registerCommand(new HomeCommand(this));
     	commandManager.registerCommand(new DocumentationCommand(this));
+    	commandManager.registerCommand(new MuteCommand(this));
+    	commandManager.registerCommand(new UnmuteCommand(this));
     	registerConditions();
     	registerCompletions();
     }

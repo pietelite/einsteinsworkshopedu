@@ -3,6 +3,7 @@ package me.pietelite.einsteinsworkshopedu.features.freeze;
 import javax.annotation.Syntax;
 
 import co.aikar.commands.annotation.*;
+import me.pietelite.einsteinsworkshopedu.tools.chat.ClickableMessage;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
@@ -47,14 +48,19 @@ public class FreezeCommand extends EinsteinsWorkshopCommand {
 		}
     	for (Player player : Sponge.getServer().getOnlinePlayers()) {
 			if (!player.hasPermission("einsteinsworkshop.immunity")) {
-				if (!((FreezeManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.FREEZE).getManager()).getFrozenPlayers().contains(player)) {
-					((FreezeManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.FREEZE).getManager()).getFrozenPlayers().add(player);
+				if (!((FreezeManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.FREEZE).getManager()).getFrozenPlayers().contains(player.getUniqueId())) {
+					((FreezeManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.FREEZE).getManager()).getFrozenPlayers().add(player.getUniqueId());
 					player.sendMessage(Text.of(TextColors.AQUA, "You have been frozen!"));
 				}
 			}
 		}
     	((FreezeManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.FREEZE).getManager()).isAllFrozen = true;
-		source.sendMessage(Utils.createFreezeAllMessage(true));
+		source.sendMessage(
+				ClickableMessage
+						.builder(Text.of(TextColors.AQUA, "All players have been frozen"))
+						.addClickable("Unfreeze", "/ew uf all", Text.of(TextColors.LIGHT_PURPLE, "Unfreeze all players"))
+						.build()
+						.getText());
     }
     
     @Subcommand("player|p")
@@ -67,9 +73,17 @@ public class FreezeCommand extends EinsteinsWorkshopCommand {
     	for (Player onlinePlayer : Sponge.getServer().getOnlinePlayers()) {
 			if (onlinePlayer.getDisplayNameData().displayName().get().toPlain().equalsIgnoreCase(name)) {
 				if (!onlinePlayer.hasPermission("einsteinsworkshop.immunity")) {
-					if (!((FreezeManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.FREEZE).getManager()).getFrozenPlayers().contains(onlinePlayer)) {
-						((FreezeManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.FREEZE).getManager()).getFrozenPlayers().add(onlinePlayer);
-						source.sendMessage(Utils.createFreezePlayerMessage(true, name));
+					if (!((FreezeManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.FREEZE).getManager()).getFrozenPlayers().contains(onlinePlayer.getUniqueId())) {
+						((FreezeManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.FREEZE).getManager()).getFrozenPlayers().add(onlinePlayer.getUniqueId());
+						source.sendMessage(
+								ClickableMessage
+										.builder(Text.of(TextColors.AQUA, onlinePlayer.getName() + " has been frozen"))
+										.addClickable("Unfreeze", "/ew uf p " + onlinePlayer.getName(),
+												Text.of(TextColors.LIGHT_PURPLE, "Unfreeze " + onlinePlayer.getName()))
+										.addClickable("Unfreeze All", "/ew uf a",
+												Text.of(TextColors.LIGHT_PURPLE, "Unfreeze all players"))
+										.build()
+										.getText());
 						onlinePlayer.sendMessage(Text.of(TextColors.AQUA, "You have been frozen!"));
 					} else {
 						source.sendMessage(Text.of(TextColors.RED, "That player is already frozen!"));

@@ -6,17 +6,18 @@ import org.spongepowered.api.entity.living.player.Player;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 
 public class MuteManager extends FeatureManager {
 
-    private List<Player> mutedPlayers = new LinkedList<>();
+    private List<UUID> mutedPlayers = new LinkedList<>();
     public boolean isAllMuted = false;
 
     public MuteManager(EweduPlugin plugin) {
         super(plugin, EweduPlugin.FeatureTitle.MUTE);
     }
 
-    public List<Player> getMutedPlayers() {
+    public List<UUID> getMutedPlayers() {
         return mutedPlayers;
     }
 

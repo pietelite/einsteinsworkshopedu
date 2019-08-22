@@ -15,17 +15,17 @@ public class Home implements EweduElement {
     private final UUID playerUUID;
     private final Transform<World> transform;
 
-    public Home(UUID playerUUID, Transform<World> transform) {
+    Home(UUID playerUUID, Transform<World> transform) {
         this.playerUUID = playerUUID;
         this.transform = transform;
     }
 
-    public Home(UUID playerUUID, World world, Vector3d translation, Vector3d rotation) {
-        this.transform = new Transform(world, translation, rotation);
+    Home(UUID playerUUID, World world, Vector3d translation, Vector3d rotation) {
+        this.transform = new Transform<>(world, translation, rotation);
         this.playerUUID = playerUUID;
     }
 
-    public Home(UUID playerUUID, double xLocation, double yLocation, double zLocation, double rotation1, double rotation2, double rotation3, World world) {
+    Home(UUID playerUUID, double xLocation, double yLocation, double zLocation, double rotation1, double rotation2, double rotation3, World world) {
         this(
                 playerUUID,
                 world,
@@ -53,15 +53,15 @@ public class Home implements EweduElement {
         return Text.of(getTransform().toString());
     }
 
-    public UUID getPlayerUUID() {
+    UUID getPlayerUUID() {
         return playerUUID;
     }
 
-    public Transform<World> getTransform() {
+    private Transform<World> getTransform() {
         return transform;
     }
 
-    public boolean teleport(Player player) {
+    boolean teleport(Player player) {
         return player.setTransformSafely(this.transform);
     }
 }

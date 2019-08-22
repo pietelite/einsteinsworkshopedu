@@ -1,6 +1,7 @@
 package me.pietelite.einsteinsworkshopedu.listeners;
 
 import me.pietelite.einsteinsworkshopedu.features.freeze.FreezeManager;
+import me.pietelite.einsteinsworkshopedu.features.mute.MuteManager;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.EventListener;
@@ -24,8 +25,12 @@ public class ChatListener implements EventListener<MessageChannelEvent.Chat> {
 		Object root = event.getCause().root();
 		if (root instanceof Player) {
 			Player player = (Player) root;
-			if (((FreezeManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.FREEZE).getManager()).getFrozenPlayers().contains(player)) {
+			if (((FreezeManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.FREEZE).getManager()).getFrozenPlayers().contains(player.getUniqueId())) {
 				player.sendMessage(Text.of(TextColors.RED, "You cannot chat while frozen!"));
+				event.setCancelled(true);
+			}
+			if (((MuteManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.MUTE).getManager()).getMutedPlayers().contains(player.getUniqueId())) {
+				player.sendMessage(Text.of(TextColors.RED, "You cannot chat while muted!"));
 				event.setCancelled(true);
 			}
 		}

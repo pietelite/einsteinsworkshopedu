@@ -61,7 +61,7 @@ public class TargetEntityEventListener implements EventListener<TargetEntityEven
 		Entity movingEntity = event.getTargetEntity();
 		if (movingEntity instanceof Player) {
 			Player movingPlayer = (Player) movingEntity;
-			if (((FreezeManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.FREEZE).getManager()).getFrozenPlayers().contains(movingPlayer)) {
+			if (((FreezeManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.FREEZE).getManager()).getFrozenPlayers().contains(movingPlayer.getUniqueId())) {
 				try {
 					((Cancellable) event).setCancelled(true);
 					return;
@@ -102,7 +102,7 @@ public class TargetEntityEventListener implements EventListener<TargetEntityEven
 					} else {
 						currentBox.spawnBorderParticles(movingPlayer, Color.RED);
 					}
-					movingPlayer.setTransform(new Transform<World>(
+					movingPlayer.setTransform(new Transform<>(
 							lastSavedLocation.getWorld(),
 							new Vector3d(
 									lastSavedLocation.getBlockX() + 0.5,
