@@ -22,7 +22,6 @@ import org.spongepowered.api.event.item.inventory.ChangeInventoryEvent;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.util.Color;
-import org.spongepowered.api.world.World;
 
 import javax.annotation.Nonnull;
 import java.util.List;

@@ -1,5 +1,6 @@
 package me.pietelite.einsteinsworkshopedu.features.assignments;
 
+import me.pietelite.einsteinsworkshopedu.EinsteinsWorkshopCommand;
 import me.pietelite.einsteinsworkshopedu.EweduPlugin;
 import me.pietelite.einsteinsworkshopedu.features.assignments.Assignment.BodyTooLongException;
 import me.pietelite.einsteinsworkshopedu.features.assignments.Assignment.TitleTooLongException;
@@ -13,7 +14,6 @@ public class AssignmentManager extends EweduElementManager<Assignment> {
 	public AssignmentManager(EweduPlugin plugin) {
 		super(
 				plugin,
-				EweduPlugin.FeatureTitle.ASSIGNMENTS,
 				line -> {
 					String[] tokens = line.getTokens();
 					if (tokens.length != 4) throw new IllegalArgumentException();

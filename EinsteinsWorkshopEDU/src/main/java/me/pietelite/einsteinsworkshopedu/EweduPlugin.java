@@ -9,11 +9,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-import me.pietelite.einsteinsworkshopedu.extras.DocumentationCommand;
-import me.pietelite.einsteinsworkshopedu.features.boxes.Box;
+import me.pietelite.einsteinsworkshopedu.features.documentation.DocumentationCommand;
 import me.pietelite.einsteinsworkshopedu.features.boxes.BoxCommand;
 import me.pietelite.einsteinsworkshopedu.features.boxes.BoxManager;
 import me.pietelite.einsteinsworkshopedu.features.boxes.PlayerLocationManager;
+import me.pietelite.einsteinsworkshopedu.features.documentation.DocumentationManager;
 import me.pietelite.einsteinsworkshopedu.features.homes.HomeCommand;
 import me.pietelite.einsteinsworkshopedu.features.homes.HomeManager;
 import me.pietelite.einsteinsworkshopedu.features.mute.MuteCommand;
@@ -122,7 +122,7 @@ public class EweduPlugin implements PluginContainer {
 
 
 
-        playerLocationManager = new PlayerLocationManager(this);
+        playerLocationManager = new PlayerLocationManager();
 
         // Init the config from the Sponge API and set the specific node values.
         initializeConfig();
@@ -136,18 +136,79 @@ public class EweduPlugin implements PluginContainer {
         // Register all the listeners with Sponge
         registerListeners();
         
-        // Register all the commands with Sponge
-        registerCommands(); 
     }
 
     @Listener
 	public void onStarted(GameStartedServerEvent event) {
-		new FreezeManager(this);
-		new AssignmentManager(this);
-		new BoxManager(this);
-    	new HomeManager(this);
-    	new MuteManager(this);
+		// Register all the features with Sponge (including commands)
+		// Do this here instead of onInitialize because some features have
+		// to know what the worlds are, which is known to the plugin after
+		// initialization
+    	initializeFeatures();
 		loadConfig();
+	}
+
+	private void initializeFeatures() {
+    	initCommands();
+		features.put(
+				FeatureTitle.FREEZE,
+				new Feature(this,
+						"freeze",
+						new FreezeManager(this),
+						new EinsteinsWorkshopCommand[] {
+								new FreezeCommand(this),
+								new UnfreezeCommand(this)
+						}));
+		features.put(
+				FeatureTitle.ASSIGNMENTS,
+				new Feature(this,
+						"assignments",
+						new AssignmentManager(this),
+						new EinsteinsWorkshopCommand[] {
+								new AssignmentCommand(this)
+						}));
+		features.put(
+				FeatureTitle.BOXES,
+				new Feature(this,
+						"boxes",
+						new BoxManager(this),
+						new EinsteinsWorkshopCommand[] {
+								new BoxCommand(this)
+						}));
+		features.put(
+				FeatureTitle.HOMES,
+				new Feature(this,
+						"homes",
+						new HomeManager(this),
+						new EinsteinsWorkshopCommand[] {
+								new HomeCommand(this)
+						}));
+		features.put(
+				FeatureTitle.MUTE,
+				new Feature(this,
+						"mute",
+						new MuteManager(this),
+						new EinsteinsWorkshopCommand[] {
+								new MuteCommand(this),
+								new UnmuteCommand(this)
+						}));
+		features.put(
+				FeatureTitle.DOCUMENTATION,
+				new Feature(this,
+						"documentation",
+						new DocumentationManager(this),
+						new EinsteinsWorkshopCommand[] {
+								new DocumentationCommand(this)
+						}));
+	}
+
+	@SuppressWarnings("deprecation")
+	private void initCommands() {
+		commandManager = new SpongeCommandManager(this.container);
+		commandManager.enableUnstableAPI("help");
+		commandManager.createRootCommand("einsteinsworkshop");
+		registerConditions();
+		registerCompletions();
 	}
 
 	private void initializeConfig() {
@@ -160,7 +221,6 @@ public class EweduPlugin implements PluginContainer {
 					featureNode.getNode(feature.name()).getNode("enabled").setValue(true);
 				}
                 featureNode.getNode(FeatureTitle.ASSIGNMENTS.name()).getNode("types").setValue(Assignment.DEFAULT_ASSIGNMENT_TYPES);
-				featureNode.getNode(FeatureTitle.BOXES.name()).getNode("wand_item").setValue(Box.DEFAULT_BOX_WAND.getName());
                 configManager.save(rootNode);
 				getLogger().info("New Configuration File created successfully!");
             } catch (IOException e) {
@@ -182,30 +242,11 @@ public class EweduPlugin implements PluginContainer {
 				} else {
 					return object.toString();}
 				});
-			((BoxManager) this.getFeatures().get(FeatureTitle.BOXES).getManager()).setWandItemName(featureNode.getNode(FeatureTitle.BOXES.name()).getNode("wand_item").getString());
 			getLogger().info("List of Valid Assignment Types: " + assignmentTypes.toString());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-    
-	@SuppressWarnings("deprecation")
-	private void registerCommands() {
-    	commandManager = new SpongeCommandManager(this.container);
-    	commandManager.enableUnstableAPI("help");
-    	commandManager.createRootCommand("einsteinsworkshop");
-    	commandManager.registerCommand(new EinsteinsWorkshopCommand(this));
-    	commandManager.registerCommand(new FreezeCommand(this));
-    	commandManager.registerCommand(new UnfreezeCommand(this));
-    	commandManager.registerCommand(new AssignmentCommand(this));
-    	commandManager.registerCommand(new BoxCommand(this));
-    	commandManager.registerCommand(new HomeCommand(this));
-    	commandManager.registerCommand(new DocumentationCommand(this));
-    	commandManager.registerCommand(new MuteCommand(this));
-    	commandManager.registerCommand(new UnmuteCommand(this));
-    	registerConditions();
-    	registerCompletions();
-    }
     
     private void registerConditions() {
     	// @Condition("player)
@@ -319,6 +360,10 @@ public class EweduPlugin implements PluginContainer {
 		return new File(configDirectory.getParentFile().getParentFile().getPath() + "/" + ID);
 	}
 
+	public SpongeCommandManager getCommandManager() {
+    	return commandManager;
+	}
+
 
 
 	public static List<String> getAssignmentTypes() {
@@ -336,7 +381,8 @@ public class EweduPlugin implements PluginContainer {
 		ASSIGNMENTS,
 		FREEZE,
 		HOMES,
-		MUTE
+		MUTE,
+		DOCUMENTATION
 	}
 
 }

@@ -42,7 +42,12 @@ public class ChangeBlockListener implements EventListener<ChangeBlockEvent> {
             for (Box box : ((BoxManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.BOXES).getManager()).getElements()) {
                 if (!box.building) {
                     try {
-                        Location<World> location = event.getTransactions().get(0).getOriginal().getLocation().get();
+                        Location<World> location;
+                        if (event.getTransactions().get(0).getOriginal().getLocation().isPresent()) {
+                            location = event.getTransactions().get(0).getOriginal().getLocation().get();
+                        } else {
+                            throw new NoSuchElementException();
+                        }
                         if (!player.hasPermission("einsteinsworkshop.instructor") &&
                                 box.contains(new SimpleLocation(location.getBlockPosition(), location.getExtent()))) {
                             player.sendMessage(Text.of(TextColors.RED, "You can't edit here!"));

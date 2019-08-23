@@ -36,18 +36,18 @@ public class BoxCommand extends EinsteinsWorkshopCommand {
             return;
         }
         if (source.hasPermission("einsteinsworkshop.instructor")) {
-            source.sendMessage(commandMessage("/ew box|b", "list", ""));
-            source.sendMessage(commandMessage("/ew box|b", "position1|pos1", ""));
-            source.sendMessage(commandMessage("/ew box|b", "position2|pos2", ""));
-            source.sendMessage(commandMessage("/ew box|b", "create", ""));
-            source.sendMessage(commandMessage("/ew box|b", "destroy <id>", ""));
-            source.sendMessage(commandMessage("/ew box|b", "info [id]", ""));
-            source.sendMessage(commandMessage("/ew box|b", "edit movement <id> true|false", ""));
-            source.sendMessage(commandMessage("/ew box|b", "edit building <id> true|false", ""));
-            source.sendMessage(commandMessage("/ew box|b", "show <id>", ""));
-            source.sendMessage(commandMessage("/ew box|b", "show all", ""));
-            source.sendMessage(commandMessage("/ew box|b", "teleport|tp <id>", ""));
-            source.sendMessage(commandMessage("/ew box|b", "wand", ""));
+            source.sendMessage(commandMessage("/ew box|b", "list"));
+            source.sendMessage(commandMessage("/ew box|b", "position1|pos1"));
+            source.sendMessage(commandMessage("/ew box|b", "position2|pos2"));
+            source.sendMessage(commandMessage("/ew box|b", "create"));
+            source.sendMessage(commandMessage("/ew box|b", "destroy <id>"));
+            source.sendMessage(commandMessage("/ew box|b", "info [id]"));
+            source.sendMessage(commandMessage("/ew box|b", "edit movement <id> true|false"));
+            source.sendMessage(commandMessage("/ew box|b", "edit building <id> true|false"));
+            source.sendMessage(commandMessage("/ew box|b", "show <id>"));
+            source.sendMessage(commandMessage("/ew box|b", "show all"));
+            source.sendMessage(commandMessage("/ew box|b", "teleport|tp <id>"));
+            source.sendMessage(commandMessage("/ew box|b", "wand"));
         }
     }
 
@@ -149,7 +149,7 @@ public class BoxCommand extends EinsteinsWorkshopCommand {
         try {
             plugin.getFeatures().get(EweduPlugin.FeatureTitle.BOXES).getManager().getElements().remove(id - 1);
             plugin.getFeatures().get(EweduPlugin.FeatureTitle.BOXES).getManager().save();
-            player.sendMessage(Text.of(TextColors.GREEN, "Box ", TextColors.GOLD, id, TextColors.GREEN, " removed!"));
+            player.sendMessage(Text.of(TextColors.GREEN, "Box ", TextColors.GOLD, id, TextColors.GREEN, " destroyed!"));
         } catch (IndexOutOfBoundsException e) {
             player.sendMessage(Text.of(TextColors.RED, "No box matches with that id!"));
         }

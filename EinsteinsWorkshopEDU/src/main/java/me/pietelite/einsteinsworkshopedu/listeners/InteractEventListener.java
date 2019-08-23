@@ -41,15 +41,20 @@ public class InteractEventListener implements EventListener<InteractEvent> {
 
 			for (Box box : ((BoxManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.BOXES).getManager()).getElements()) {
 				try {
-					if (!player.hasPermission("einsteinsworkshop.instructor") &&
-							box.contains(new SimpleLocation(
+					if (!player.hasPermission("einsteinsworkshop.instructor")) {
+						if (event.getInteractionPoint().isPresent()) {
+							if (box.contains(new SimpleLocation(
 								event.getInteractionPoint().get().getFloorX(),
 								event.getInteractionPoint().get().getFloorY(),
 								event.getInteractionPoint().get().getFloorZ(),
 								player.getLocation().getExtent())) && !box.building) {
-						player.sendMessage(Text.of(TextColors.RED, "You can't edit here!"));
-						event.setCancelled(true);
-						break;
+								player.sendMessage(Text.of(TextColors.RED, "You can't edit here!"));
+								event.setCancelled(true);
+								break;
+							}
+						} else {
+							throw new NoSuchElementException();
+						}
 					}
 				} catch (ClassCastException | NoSuchElementException e) {
 					// ignore
@@ -58,8 +63,9 @@ public class InteractEventListener implements EventListener<InteractEvent> {
 			}
 			if (event instanceof InteractBlockEvent.Primary) {
 				InteractBlockEvent.Primary primaryInteractEvent = (InteractBlockEvent.Primary) event;
-				if (player.getItemInHand(HandTypes.MAIN_HAND).get().getType().getName().equals(
-						((BoxManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.BOXES).getManager()).getWandItemName())) {
+				if (player.getItemInHand(HandTypes.MAIN_HAND).isPresent() &&
+						player.getItemInHand(HandTypes.MAIN_HAND).get().getType().getName().equals(
+						((BoxManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.BOXES).getManager()).getWandItem().getName())) {
 					SimpleLocation newLocation = new SimpleLocation(primaryInteractEvent.getTargetBlock().getPosition(),player.getWorld());
 					SimpleLocation priorLocation = ((BoxManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.BOXES).getManager()).getPosition1Map().put(
 							player.getUniqueId(),
@@ -73,8 +79,9 @@ public class InteractEventListener implements EventListener<InteractEvent> {
 			}
 			if (event instanceof InteractBlockEvent.Secondary) {
 				InteractBlockEvent.Secondary secondaryInteractEvent = (InteractBlockEvent.Secondary) event;
-				if (player.getItemInHand(HandTypes.MAIN_HAND).get().getType().getName().equals(
-						((BoxManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.BOXES).getManager()).getWandItemName())) {
+				if (player.getItemInHand(HandTypes.MAIN_HAND).isPresent() &&
+						player.getItemInHand(HandTypes.MAIN_HAND).get().getType().getName().equals(
+						((BoxManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.BOXES).getManager()).getWandItem().getName())) {
 					SimpleLocation newLocation = new SimpleLocation(secondaryInteractEvent.getTargetBlock().getPosition(),player.getWorld());
 					SimpleLocation priorLocation = ((BoxManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.BOXES).getManager()).getPosition2Map().put(
 							player.getUniqueId(),

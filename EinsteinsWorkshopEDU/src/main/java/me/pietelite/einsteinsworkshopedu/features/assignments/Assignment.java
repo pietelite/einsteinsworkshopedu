@@ -1,13 +1,10 @@
 package me.pietelite.einsteinsworkshopedu.features.assignments;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import me.pietelite.einsteinsworkshopedu.tools.storage.EweduElement;
 import me.pietelite.einsteinsworkshopedu.tools.storage.StorageLine;
-import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColor;
@@ -29,7 +26,7 @@ public class Assignment implements EweduElement {
 	private Date timestamp;
 	private String type;
 	
-	private List<Player> playersCompleted = new LinkedList<>();
+	private List<UUID> playersCompleted = new LinkedList<>();
 	
 	Assignment(String type, String title) throws TitleTooLongException, IllegalArgumentException {
 		this.setType(type.toUpperCase());
@@ -76,14 +73,16 @@ public class Assignment implements EweduElement {
 		this.timestamp = date;
 	}
 	
-	List<Player> getPlayersCompleted() {
+	List<UUID> getPlayersCompleted() {
 		return this.playersCompleted;
 	}
 	
 	private String[] getPlayersCompletedNames() {
 		String[] output = new String[playersCompleted.size()];
 		for (int i = 0; i < playersCompleted.size(); i++) {
-			output[i] = playersCompleted.get(i).getName();
+			if (Sponge.getServer().getPlayer(playersCompleted.get(i)).isPresent()) {
+				output[i] = Sponge.getServer().getPlayer(playersCompleted.get(i)).get().getName();
+			}
 		}
 		return output;
 	}

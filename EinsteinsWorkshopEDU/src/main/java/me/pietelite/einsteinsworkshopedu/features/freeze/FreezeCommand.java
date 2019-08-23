@@ -35,8 +35,8 @@ public class FreezeCommand extends EinsteinsWorkshopCommand {
 			return;
 		}
 		if (source.hasPermission("einsteinsworkshop.instructor")) {
-			source.sendMessage(commandMessage("/ew freeze|f", "all|a", ""));
-			source.sendMessage(commandMessage("/ew freeze|f", "player|p <player>", ""));
+			source.sendMessage(commandMessage("/ew freeze|f", "all|a"));
+			source.sendMessage(commandMessage("/ew freeze|f", "player|p <player>"));
 		}
 	}
 
@@ -58,7 +58,7 @@ public class FreezeCommand extends EinsteinsWorkshopCommand {
 		source.sendMessage(
 				ClickableMessage
 						.builder(Text.of(TextColors.AQUA, "All players have been frozen"))
-						.addClickable("Unfreeze", "/ew uf all", Text.of(TextColors.LIGHT_PURPLE, "Unfreeze all players"))
+						.addClickableCommand("Unfreeze", "/ew uf all", Text.of(TextColors.LIGHT_PURPLE, "Unfreeze all players"))
 						.build()
 						.getText());
     }
@@ -78,9 +78,9 @@ public class FreezeCommand extends EinsteinsWorkshopCommand {
 						source.sendMessage(
 								ClickableMessage
 										.builder(Text.of(TextColors.AQUA, onlinePlayer.getName() + " has been frozen"))
-										.addClickable("Unfreeze", "/ew uf p " + onlinePlayer.getName(),
+										.addClickableCommand("Unfreeze", "/ew uf p " + onlinePlayer.getName(),
 												Text.of(TextColors.LIGHT_PURPLE, "Unfreeze " + onlinePlayer.getName()))
-										.addClickable("Unfreeze All", "/ew uf a",
+										.addClickableCommand("Unfreeze All", "/ew uf a",
 												Text.of(TextColors.LIGHT_PURPLE, "Unfreeze all players"))
 										.build()
 										.getText());

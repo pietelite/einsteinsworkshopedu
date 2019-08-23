@@ -172,11 +172,10 @@ public class Box implements EweduElement {
     }
 
     private World getWorld() {
-        try {
+        if (Sponge.getServer().getWorld(worldUUID).isPresent()) {
             return Sponge.getServer().getWorld(worldUUID).get();
-        } catch (NoSuchElementException e) {
-            e.printStackTrace();
-            return null;
+        } else {
+            throw new NoSuchElementException();
         }
     }
 

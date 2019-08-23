@@ -34,8 +34,8 @@ public class MuteCommand extends EinsteinsWorkshopCommand {
             return;
         }
         if (source.hasPermission("einsteinsworkshop.instructor")) {
-            source.sendMessage(commandMessage("/ew mute|m", "all|a", ""));
-            source.sendMessage(commandMessage("/ew mute|m", "player|p <player>", ""));
+            source.sendMessage(commandMessage("/ew mute|m", "all|a"));
+            source.sendMessage(commandMessage("/ew mute|m", "player|p <player>"));
         }
     }
 
@@ -48,12 +48,7 @@ public class MuteCommand extends EinsteinsWorkshopCommand {
         for (Player player : Sponge.getServer().getOnlinePlayers()) {
             if (!player.hasPermission("einsteinsworkshop.immunity")) {
                 if (!((MuteManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.MUTE).getManager()).getMutedPlayers().contains(player.getUniqueId())) {
-                    /* TODO
-                     * I want to add the player to the the list of muted players so the server knows that this person is muted
-                     * Tell the player that they are muted!
-                     */
                     ((MuteManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.MUTE).getManager()).getMutedPlayers().add(player.getUniqueId());
-                    player.sendMessage(Text.of(TextColors.RED, "you fool you have been muted"));
                 }
             }
         }
@@ -61,7 +56,7 @@ public class MuteCommand extends EinsteinsWorkshopCommand {
         source.sendMessage(
                 ClickableMessage
                         .builder(Text.of(TextColors.AQUA, "All players have been muted"))
-                        .addClickable("Unmute", "/ew um all", Text.of(TextColors.LIGHT_PURPLE, "Unmute all players"))
+                        .addClickableCommand("Unmute", "/ew um all", Text.of(TextColors.LIGHT_PURPLE, "Unmute all players"))
                         .build()
                         .getText());
     }
@@ -77,18 +72,13 @@ public class MuteCommand extends EinsteinsWorkshopCommand {
             if (onlinePlayer.getName().equalsIgnoreCase(name)) {
                 if (!onlinePlayer.hasPermission("einsteinsworkshop.immunity")) {
                     if (!((MuteManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.MUTE).getManager()).getMutedPlayers().contains(onlinePlayer.getUniqueId())) {
-                        /* TODO
-                         * I want to add the player to the the list of muted players so the server knows that this person is muted
-                         * Tell the player that they are muted!
-                         */
                         ((MuteManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.MUTE).getManager()).getMutedPlayers().add(onlinePlayer.getUniqueId());
-                        onlinePlayer.sendMessage(Text.of(TextColors.RED, "you fool you have been muted"));
                         source.sendMessage(
                                 ClickableMessage
                                         .builder(Text.of(TextColors.AQUA, onlinePlayer.getName() + " has been muted"))
-                                        .addClickable("Unmute", "/ew um p " + onlinePlayer.getName(),
+                                        .addClickableCommand("Unmute", "/ew um p " + onlinePlayer.getName(),
                                                 Text.of(TextColors.LIGHT_PURPLE, "Unmute " + onlinePlayer.getName()))
-                                        .addClickable("Unmute All", "/ew um a",
+                                        .addClickableCommand("Unmute All", "/ew um a",
                                                 Text.of(TextColors.LIGHT_PURPLE, "Unmute all players"))
                                         .build()
                                         .getText());

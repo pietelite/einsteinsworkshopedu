@@ -16,8 +16,7 @@ public class BoxManager extends EweduElementManager<Box> {
     private static final String BOXES_FILE_NAME = "boxes.txt";
     private static final String DEFAULT_BOXES_ASSET_FILE = "default_boxes.txt";
 
-    private String wandItemName = ItemTypes.BRICK.getName();
-
+    private ItemType wandItem = ItemTypes.BRICK;
 
     public static final Box NONE = new Box(
             null,
@@ -32,7 +31,6 @@ public class BoxManager extends EweduElementManager<Box> {
     public BoxManager(EweduPlugin plugin) {
         super(
                 plugin,
-                EweduPlugin.FeatureTitle.BOXES,
                 line -> {
                     String[] tokens = line.getTokens();
                     if (tokens.length != 9) throw new IllegalArgumentException();
@@ -64,7 +62,7 @@ public class BoxManager extends EweduElementManager<Box> {
         );
     }
 
-    public boolean hasSelection(UUID uuid) {
+    boolean hasSelection(UUID uuid) {
         return position1Map.containsKey(uuid) && position2Map.containsKey(uuid);
     }
 
@@ -76,20 +74,7 @@ public class BoxManager extends EweduElementManager<Box> {
         return position2Map;
     }
 
-    public String getWandItemName() {
-        return this.wandItemName;
-    }
-
-    public void setWandItemName(String wandItemName) {
-        this.wandItemName = wandItemName;
-    }
-
     public ItemType getWandItem() {
-        switch(wandItemName) {
-            case "minecraft:brick":
-                return ItemTypes.BRICK;
-            default:
-                return ItemTypes.BRICK;
-        }
+        return wandItem;
     }
 }

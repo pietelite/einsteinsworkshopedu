@@ -17,17 +17,15 @@ public class TargetInventoryEventListener implements EventListener<TargetInvento
 	}
 	
 	@Override
-	public void handle(TargetInventoryEvent event) throws Exception {
+	public void handle(TargetInventoryEvent event) {
 		Object root = event.getCause().root();
 		if (root instanceof Player) {
 			Player movingPlayer = (Player) root;
 			if (((FreezeManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.FREEZE).getManager()).getFrozenPlayers().contains(movingPlayer.getUniqueId())) {
 				try {
 					((Cancellable) event).setCancelled(true);
-					return;
 				} catch (ClassCastException e) {
 					// ignore
-					return;
 				}
 			}
 		}

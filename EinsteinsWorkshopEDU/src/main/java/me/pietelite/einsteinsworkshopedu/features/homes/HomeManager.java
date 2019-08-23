@@ -19,21 +19,24 @@ public class HomeManager extends EweduElementManager<Home> {
     public HomeManager(EweduPlugin plugin) {
         super(
                 plugin,
-                EweduPlugin.FeatureTitle.HOMES,
                 line -> {
-                    String tokens[] = line.getTokens();
+                    String[] tokens = line.getTokens();
                     if (tokens.length != 8) throw new IllegalArgumentException();
                     try {
-                        return new Home(
-                                UUID.fromString(tokens[0]),
-                                Double.parseDouble(tokens[1]),
-                                Double.parseDouble(tokens[2]),
-                                Double.parseDouble(tokens[3]),
-                                Double.parseDouble(tokens[4]),
-                                Double.parseDouble(tokens[5]),
-                                Double.parseDouble(tokens[6]),
-                                Sponge.getServer().getWorld(UUID.fromString(tokens[7])).get()
-                        );
+                        if (Sponge.getServer().getWorld(UUID.fromString(tokens[7])).isPresent()) {
+                            return new Home(
+                                    UUID.fromString(tokens[0]),
+                                    Double.parseDouble(tokens[1]),
+                                    Double.parseDouble(tokens[2]),
+                                    Double.parseDouble(tokens[3]),
+                                    Double.parseDouble(tokens[4]),
+                                    Double.parseDouble(tokens[5]),
+                                    Double.parseDouble(tokens[6]),
+                                    Sponge.getServer().getWorld(UUID.fromString(tokens[7])).get()
+                            );
+                        } else {
+                            throw new NoSuchElementException();
+                        }
                     } catch (NumberFormatException num_e) {
                         plugin.getLogger().error("The line could not be formed into a Home object because of a " +
                                 "NumberFormatException: " + String.join(",", tokens));
@@ -45,10 +48,11 @@ public class HomeManager extends EweduElementManager<Home> {
                     }
                 },
                 HOME_FILE_NAME,
-                DEFAULT_HOME_ASSET_FILE);
+                DEFAULT_HOME_ASSET_FILE
+        );
     }
 
-    public Home getHome(UUID playerUUID) {
+    private Home getHome(UUID playerUUID) {
         for (Home home : getElements()) {
             if (home.getPlayerUUID().equals(playerUUID)) {
                 return home;
@@ -57,13 +61,12 @@ public class HomeManager extends EweduElementManager<Home> {
         return null;
     }
 
-    public Home getHome(Player player) {
+    Home getHome(Player player) {
         return getHome(player.getUniqueId());
     }
 
-    public boolean removeHome(UUID playerUUID) {
+    private void removeHome(UUID playerUUID) {
         List<Home> toRemove = new LinkedList<>();
-        boolean changed = false;
         for (Home home : getElements()) {
             if (home.getPlayerUUID().equals(playerUUID)) {
                 toRemove.add(home);
@@ -71,20 +74,18 @@ public class HomeManager extends EweduElementManager<Home> {
         }
         for (Home home : toRemove) {
             getElements().remove(home);
-            changed = true;
         }
-        return changed;
     }
 
-    public boolean removeHome(Player player) {
-        return removeHome(player.getUniqueId());
+    void removeHome(Player player) {
+        removeHome(player.getUniqueId());
     }
 
-    public void addHome(Player player) {
+    void addHome(Player player) {
         getElements().add(new Home(player.getUniqueId(), player.getTransform()));
     }
 
-    public void addHome(Player player, int x, int y, int z) {
+    void addHome(Player player, int x, int y, int z) {
         getElements().add(new Home(
                 player.getUniqueId(),
                 player.getLocation().getExtent(),

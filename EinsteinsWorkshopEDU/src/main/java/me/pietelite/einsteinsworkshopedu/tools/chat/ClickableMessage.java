@@ -6,10 +6,14 @@ package me.pietelite.einsteinsworkshopedu.tools.chat;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
+import org.spongepowered.api.text.format.TextStyles;
+
+import java.net.MalformedURLException;
+import java.net.URL;
 
 public class ClickableMessage {
 
-    Text text;
+    private Text text;
 
     private ClickableMessage(Text text) {
         this.text = text;
@@ -31,11 +35,21 @@ public class ClickableMessage {
             builder = Text.builder().append(messageBody);
         }
 
-        public Builder addClickable(String name, String command, Text hoverMessage) {
+        public Builder addClickableCommand(String name, String command, Text hoverMessage) {
             Text clickable = Text.builder()
-                    .append(Text.of(TextColors.GOLD, " [", Text.of(TextColors.GRAY, name), "]"))
+                    .append(Text.of(TextColors.GOLD, TextStyles.ITALIC, " [", Text.of(TextColors.GRAY, name), "]"))
                     .onClick(TextActions.runCommand(command))
                     .onHover(TextActions.showText(hoverMessage))
+                    .build();
+            builder.append(clickable);
+            return this;
+        }
+
+        public Builder addClickableURL(String name, String url) throws MalformedURLException {
+            Text clickable = Text.builder()
+                    .append(Text.of(TextColors.GOLD, TextStyles.ITALIC, " [", Text.of(TextColors.GRAY, name), "]"))
+                    .onClick(TextActions.openUrl(new URL(url)))
+                    .onHover(TextActions.showText(Text.of(TextColors.LIGHT_PURPLE, url)))
                     .build();
             builder.append(clickable);
             return this;

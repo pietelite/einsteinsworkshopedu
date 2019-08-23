@@ -27,20 +27,20 @@ public class EinsteinsWorkshopCommand extends BaseCommand {
     @HelpCommand
     public void onHelp(CommandSource source, CommandHelp help){
 		if (source.hasPermission("einsteinsworkshop.instructor")) {
-			source.sendMessage(commandMessage("/ew", "freeze|f", ""));
-			source.sendMessage(commandMessage("/ew", "unfreeze|uf", ""));
-			source.sendMessage(commandMessage("/ew", "box|b", ""));
+			source.sendMessage(commandMessage("/ew", "freeze|f"));
+			source.sendMessage(commandMessage("/ew", "unfreeze|uf"));
+			source.sendMessage(commandMessage("/ew", "box|b"));
+			source.sendMessage(commandMessage("/ew", "documentation|docs"));
     	}
     	if (source.hasPermission("einsteinsworkshop.student"))
-			source.sendMessage(commandMessage("/ew", "assignment|a",""));
-    		source.sendMessage(commandMessage("/ew", "home|h", ""));
+			source.sendMessage(commandMessage("/ew", "assignment|a"));
+    		source.sendMessage(commandMessage("/ew", "home|h"));
 	}
 
-    protected static Text commandMessage(String command, String subcommand, String description) {
+    protected static Text commandMessage(String command, String subcommand) {
     	return Text.builder(command).color(TextColors.GRAY)
 				.append(Text.of(" "))
 				.append(Text.of(TextColors.AQUA, subcommand))
-				.append((description.isEmpty()) ? Text.of() : Text.of(TextColors. GRAY, ": ", TextColors.WHITE, description))
 				.build();
 	}
 

@@ -38,6 +38,22 @@ public class HomeCommand extends EinsteinsWorkshopCommand {
         }
     }
 
+    @Subcommand("help")
+    public void onHelp(CommandSource source) {
+        if (!plugin.getFeatures().get(EweduPlugin.FeatureTitle.HOMES).isEnabled) {
+            source.sendMessage(Text.of(TextColors.RED, "This feature has been disabled."));
+            return;
+        }
+        if (source.hasPermission("einsteinsworkshop.student")) {
+            source.sendMessage(commandMessage("/ew home|h", ""));
+            source.sendMessage(commandMessage("/ew home|h", "set"));
+        }
+        if (source.hasPermission("einsteinsworkshop.student")) {
+            source.sendMessage(commandMessage("/ew home|h", "set <x> <y> <z>"));
+            source.sendMessage(commandMessage("/ew home|h", "player <player>"));
+        }
+    }
+
     @Subcommand("set")
     @Conditions("player")
     public void onSet(CommandSource source) {

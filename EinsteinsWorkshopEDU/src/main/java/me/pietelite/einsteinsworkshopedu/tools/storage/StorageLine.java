@@ -8,11 +8,11 @@ public class StorageLine {
     private static final String COMMENT_DELIMITER = "#";
     private String line;
 
-    public StorageLine(List<String> tokens) {
+    StorageLine(List<String> tokens) {
         this.line = String.join(DATA_DELIMITER, tokens);
     }
 
-    public StorageLine(String line) {
+    StorageLine(String line) {
         this.line = line;
     }
 
@@ -30,12 +30,13 @@ public class StorageLine {
         return data.split(DATA_DELIMITER);
     }
 
+    @SuppressWarnings("unused")
     public String getComment() {
         String[] tokens = line.split(COMMENT_DELIMITER);
         if (tokens.length > 1) {
             String comment = "";
             for (int i = 1; i < tokens.length; i++) {
-                comment.concat(tokens[i]);
+                comment = comment.concat(tokens[i]);
             }
             return comment;
         } else {
@@ -43,7 +44,7 @@ public class StorageLine {
         }
     }
 
-    public boolean hasData() {
+    boolean hasData() {
         for (String token : getTokens()) {
             if (!token.isEmpty()) {
                 return true;
@@ -52,7 +53,7 @@ public class StorageLine {
         return false;
     }
 
-    public static String removeDelimiters(String line) {
+    static String removeDelimiters(String line) {
         return line.replaceAll(";", "").replaceAll("#", "");
     }
 

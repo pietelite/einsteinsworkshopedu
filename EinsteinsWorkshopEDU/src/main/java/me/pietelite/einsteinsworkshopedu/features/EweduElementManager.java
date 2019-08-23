@@ -10,18 +10,15 @@ import java.util.List;
 
 public abstract class EweduElementManager<P extends EweduElement> extends FeatureManager {
 
-    private final EweduElementFactory<P> factory;
     private final Importer<P> importer;
     private final Exporter<P> exporter;
     private List<P> elements;
 
     public EweduElementManager(EweduPlugin plugin,
-                               EweduPlugin.FeatureTitle title,
                                EweduElementFactory<P> factory,
                                String storageFileName,
                                String defaultStorageAssetFileName) {
-        super(plugin, title);
-        this.factory = factory;
+        super(plugin);
         this.importer = new Importer<>(plugin, storageFileName, factory);
         this.exporter = new Exporter<>(plugin, storageFileName, defaultStorageAssetFileName);
         loadData();

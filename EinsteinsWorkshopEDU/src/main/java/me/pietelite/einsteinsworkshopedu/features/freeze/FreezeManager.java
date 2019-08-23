@@ -11,10 +11,10 @@ import me.pietelite.einsteinsworkshopedu.EweduPlugin;
 public class FreezeManager extends FeatureManager {
 
 	private List<UUID> frozenPlayers = new LinkedList<>();
-	public boolean isAllFrozen = false;
+	boolean isAllFrozen = false;
 	
 	public FreezeManager(EweduPlugin plugin) {
-		super(plugin, EweduPlugin.FeatureTitle.FREEZE);
+		super(plugin);
 	}
 	
 	public List<UUID> getFrozenPlayers() {

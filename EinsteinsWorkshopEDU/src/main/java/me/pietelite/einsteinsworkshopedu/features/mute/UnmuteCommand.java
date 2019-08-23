@@ -34,8 +34,8 @@ public class UnmuteCommand extends EinsteinsWorkshopCommand {
             return;
         }
         if (source.hasPermission("einsteinsworkshop.instructor")) {
-            source.sendMessage(commandMessage("/ew unmute|um", "all|a", ""));
-            source.sendMessage(commandMessage("/ew unmute|m", "player|p <player>", ""));
+            source.sendMessage(commandMessage("/ew unmute|um", "all|a"));
+            source.sendMessage(commandMessage("/ew unmute|m", "player|p <player>"));
         }
     }
 
@@ -46,15 +46,13 @@ public class UnmuteCommand extends EinsteinsWorkshopCommand {
             return;
         }
         for (Player player : Sponge.getServer().getOnlinePlayers()) {
-            if (((MuteManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.MUTE).getManager()).getMutedPlayers().remove(player.getUniqueId())) {
-                player.sendMessage(Text.of(TextColors.GREEN, "You have been unmuted!"));
-            }
+            ((MuteManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.MUTE).getManager()).getMutedPlayers().remove(player.getUniqueId());
         }
         ((MuteManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.MUTE).getManager()).isAllMuted = false;
         source.sendMessage(
                 ClickableMessage
                         .builder(Text.of(TextColors.GREEN, "All players have been unmuted"))
-                        .addClickable("Mute", "/ew m all", Text.of(TextColors.LIGHT_PURPLE, "Mute all players"))
+                        .addClickableCommand("Mute", "/ew m all", Text.of(TextColors.LIGHT_PURPLE, "Mute all players"))
                         .build()
                         .getText());
     }
@@ -72,13 +70,12 @@ public class UnmuteCommand extends EinsteinsWorkshopCommand {
                     source.sendMessage(
                             ClickableMessage
                                     .builder(Text.of(TextColors.GREEN, onlinePlayer.getName() + " has been unmuted"))
-                                    .addClickable("Mute", "/ew m p " + onlinePlayer.getName(),
+                                    .addClickableCommand("Mute", "/ew m p " + onlinePlayer.getName(),
                                             Text.of(TextColors.LIGHT_PURPLE, "Mute " + onlinePlayer.getName()))
-                                    .addClickable("Mute All", "/ew m a",
+                                    .addClickableCommand("Mute All", "/ew m a",
                                             Text.of(TextColors.LIGHT_PURPLE, "Mute all players"))
                                     .build()
                                     .getText());
-                    onlinePlayer.sendMessage(Text.of(TextColors.AQUA, "You have been unmuted!"));
                 } else {
                     source.sendMessage(Text.of(TextColors.RED, "That player is not muted!"));
                 }

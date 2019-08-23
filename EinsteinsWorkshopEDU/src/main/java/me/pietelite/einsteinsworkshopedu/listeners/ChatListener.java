@@ -2,7 +2,6 @@ package me.pietelite.einsteinsworkshopedu.listeners;
 
 import me.pietelite.einsteinsworkshopedu.features.freeze.FreezeManager;
 import me.pietelite.einsteinsworkshopedu.features.mute.MuteManager;
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.EventListener;
 import org.spongepowered.api.event.message.MessageChannelEvent;
@@ -21,7 +20,7 @@ public class ChatListener implements EventListener<MessageChannelEvent.Chat> {
 	}
 
 	@Override
-	public void handle(Chat event) throws Exception {
+	public void handle(Chat event) {
 		Object root = event.getCause().root();
 		if (root instanceof Player) {
 			Player player = (Player) root;
@@ -36,8 +35,8 @@ public class ChatListener implements EventListener<MessageChannelEvent.Chat> {
 		}
 	}
 
-	public void sendModifiedMessage(Player player, Text text) {
-		Sponge.getServer().getBroadcastChannel().send(Text.of("<User> ", text));
-	}
+//	public void sendModifiedMessage(Player player, Text text) {
+//		Sponge.getServer().getBroadcastChannel().send(Text.of("<User> ", text));
+//	}
 
 }

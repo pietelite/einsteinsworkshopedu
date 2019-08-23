@@ -33,16 +33,16 @@ public class AssignmentCommand extends EinsteinsWorkshopCommand {
 	@Subcommand("help")
 	public void onHelp(CommandSource source) {
 		if (source.hasPermission("einsteinsworkshop.student")) {
-			source.sendMessage(commandMessage("/ew assignment|a", "list", ""));
-			source.sendMessage(commandMessage("/ew assignment|a", "complete <id>", ""));
+			source.sendMessage(commandMessage("/ew assignment|a", "list"));
+			source.sendMessage(commandMessage("/ew assignment|a", "complete <id>"));
 		}
 		if (source.hasPermission("einsteinsworkshop.instructor")) {
-			source.sendMessage(commandMessage("/ew assignment|a", "add <type> <title...>", ""));
-			source.sendMessage(commandMessage("/ew assignment|a", "info <id>", ""));
-			source.sendMessage(commandMessage("/ew assignment|a", "remove <id>", ""));
-			source.sendMessage(commandMessage("/ew assignment|a", "edit title <id> <title...>", ""));
-			source.sendMessage(commandMessage("/ew assignment|a", "edit body <id> <body...>", ""));
-			source.sendMessage(commandMessage("/ew assignment|a", "edit type <id> <type>", ""));
+			source.sendMessage(commandMessage("/ew assignment|a", "add <type> <title...>"));
+			source.sendMessage(commandMessage("/ew assignment|a", "info <id>"));
+			source.sendMessage(commandMessage("/ew assignment|a", "remove <id>"));
+			source.sendMessage(commandMessage("/ew assignment|a", "edit title <id> <title...>"));
+			source.sendMessage(commandMessage("/ew assignment|a", "edit body <id> <body...>"));
+			source.sendMessage(commandMessage("/ew assignment|a", "edit type <id> <type>"));
 		}
 	}
 		
@@ -59,7 +59,7 @@ public class AssignmentCommand extends EinsteinsWorkshopCommand {
 		source.sendMessage(Text.of(TextColors.GOLD, "-- All Assignments --"));
 		for (int i = 0; i < plugin.getFeatures().get(EweduPlugin.FeatureTitle.ASSIGNMENTS).getManager().getElements().size(); i++) {
 			Assignment assignment = (Assignment) plugin.getFeatures().get(EweduPlugin.FeatureTitle.ASSIGNMENTS).getManager().getElements().get(i);
-			if ((source instanceof Player) && assignment.getPlayersCompleted().contains(source)) {
+			if ((source instanceof Player) && assignment.getPlayersCompleted().contains(((Player) source).getUniqueId())) {
 				source.sendMessage(Text.of(TextStyles.STRIKETHROUGH, assignment.formatReadable(i + 1)));
 			} else {
 				source.sendMessage(((Assignment) plugin.getFeatures().get(EweduPlugin.FeatureTitle.ASSIGNMENTS).getManager().getElements().get(i)).formatReadable(i + 1));
@@ -77,14 +77,14 @@ public class AssignmentCommand extends EinsteinsWorkshopCommand {
 		Player player = (Player) source;
 		try {
 			Assignment assignment = (Assignment) plugin.getFeatures().get(EweduPlugin.FeatureTitle.ASSIGNMENTS).getManager().getElements().get(id - 1);
-			if (assignment.getPlayersCompleted().contains(player)) {
-				assignment.getPlayersCompleted().remove(player);
+			if (assignment.getPlayersCompleted().contains(player.getUniqueId())) {
+				assignment.getPlayersCompleted().remove(player.getUniqueId());
 				player.sendMessage(Text.of(TextColors.GREEN, "You have marked this assignment '", 
 						Text.of(TextColors.YELLOW, TextStyles.BOLD, "UNCOMPLETE"),
 						"'!"));
 				
 			} else {
-				assignment.getPlayersCompleted().add(player);
+				assignment.getPlayersCompleted().add(player.getUniqueId());
 				player.sendMessage(Text.of(TextColors.GREEN, "You have marked this assignment '", 
 						Text.of(TextColors.GREEN, TextStyles.BOLD, "COMPLETE"),
 						"'!"));
@@ -235,6 +235,21 @@ public class AssignmentCommand extends EinsteinsWorkshopCommand {
 			assignmentTypeText.add(Text.of(TextColors.LIGHT_PURPLE, type));
 		}
 		source.sendMessage(output.concat(Text.joinWith(Text.of(TextColors.RED, ","), assignmentTypeText)));
+	}
+
+	@Subcommand("empty")
+	@CommandPermission("einsteinsworkshop.instructor")
+	public void onEmpty(CommandSource source, int id) {
+		if (!plugin.getFeatures().get(EweduPlugin.FeatureTitle.ASSIGNMENTS).isEnabled) {
+			source.sendMessage(Text.of(TextColors.RED, "This feature has been disabled."));
+			return;
+		}
+		try {
+			Assignment assignment = (Assignment) plugin.getFeatures().get(EweduPlugin.FeatureTitle.ASSIGNMENTS).getManager().getElements().get(id - 1);
+			assignment.getPlayersCompleted().clear();
+		} catch (IndexOutOfBoundsException e) {
+			source.sendMessage(Text.of(TextColors.RED, "There is no assignment with that id."));
+		}
 	}
 
 }

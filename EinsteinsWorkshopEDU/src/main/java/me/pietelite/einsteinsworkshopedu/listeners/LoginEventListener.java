@@ -21,7 +21,7 @@ public class LoginEventListener implements EventListener<ClientConnectionEvent.J
 	}
 	
 	@Override
-	public void handle(ClientConnectionEvent.Join event) throws Exception {
+	public void handle(ClientConnectionEvent.Join event) {
 		Player player;
 		try {
 			player = event.getTargetEntity();
