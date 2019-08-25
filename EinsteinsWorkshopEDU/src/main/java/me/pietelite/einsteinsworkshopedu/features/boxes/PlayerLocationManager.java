@@ -1,20 +1,24 @@
 package me.pietelite.einsteinsworkshopedu.features.boxes;
 
-import me.pietelite.einsteinsworkshopedu.tools.SimpleLocation;
-
 import java.util.HashMap;
 import java.util.UUID;
 
+import org.spongepowered.api.world.Location;
+import org.spongepowered.api.world.World;
+
+// TODO: Replace this class with a better, more general
+//  player manager to be accessed by other features
+
 public class PlayerLocationManager {
 
-    private HashMap<UUID, SimpleLocation> playerLocations = new HashMap<>();
+  private HashMap<UUID, Location<World>> playerLocations = new HashMap<>();
 
-    public void putPlayerLocation(UUID uuid, SimpleLocation simpleLocation) {
-        playerLocations.put(uuid, simpleLocation);
-    }
+  public void putPlayerLocation(UUID uuid, Location<World> location) {
+    playerLocations.put(uuid, location);
+  }
 
-    public SimpleLocation getPlayerLocation(UUID uuid) {
-        return playerLocations.get(uuid);
-    }
+  public Location<World> getPlayerLocation(UUID uuid) {
+    return playerLocations.get(uuid);
+  }
 
 }

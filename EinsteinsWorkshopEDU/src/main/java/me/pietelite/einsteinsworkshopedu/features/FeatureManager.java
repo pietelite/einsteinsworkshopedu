@@ -7,7 +7,7 @@ import java.util.List;
 
 public abstract class FeatureManager {
 
-    private EweduPlugin plugin;
+    protected EweduPlugin plugin;
 
     public FeatureManager(EweduPlugin plugin) {
         this.plugin = plugin;

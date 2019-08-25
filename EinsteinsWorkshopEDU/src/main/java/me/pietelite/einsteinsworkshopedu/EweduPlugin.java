@@ -4,9 +4,7 @@ import static me.pietelite.einsteinsworkshopedu.EweduPlugin.ID;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 
 import me.pietelite.einsteinsworkshopedu.features.documentation.DocumentationCommand;
@@ -19,6 +17,7 @@ import me.pietelite.einsteinsworkshopedu.features.homes.HomeManager;
 import me.pietelite.einsteinsworkshopedu.features.mute.MuteCommand;
 import me.pietelite.einsteinsworkshopedu.features.mute.MuteManager;
 import me.pietelite.einsteinsworkshopedu.features.mute.UnmuteCommand;
+import me.pietelite.einsteinsworkshopedu.features.welcome.WelcomeManager;
 import me.pietelite.einsteinsworkshopedu.listeners.*;
 import me.pietelite.einsteinsworkshopedu.tools.Feature;
 import org.spongepowered.api.Sponge;
@@ -76,7 +75,6 @@ public class EweduPlugin implements PluginContainer {
 	static final String VERSION = "1.0";
 	static final String ID = "einsteinsworkshopedu";
 	
-	private static final String LOG_IN_MESSAGE_FILE_NAME = "log_in_message.txt";
 	public static final String DOCUMENTATION_LINK = "https://github.com/pietelite/einsteinsworkshopedu";
 
 	/** Location of the default configuration file for this plugin. From Sponge API. */
@@ -103,8 +101,6 @@ public class EweduPlugin implements PluginContainer {
     private HashMap<FeatureTitle, Feature> features = new HashMap<>();
 
     private PlayerLocationManager playerLocationManager;
-    
-    private List<String> loginMessage;
 
     private static List<String> assignmentTypes;
 
@@ -126,7 +122,6 @@ public class EweduPlugin implements PluginContainer {
 
         // Init the config from the Sponge API and set the specific node values.
         initializeConfig();
-		loginMessage = readLoginMessageFile(loadLoginMessageFile());
 		if (!this.getDataDirectory().mkdir()) {
 			getLogger().info("The data directory could not be created. Is it already there?");
 		}
@@ -200,6 +195,13 @@ public class EweduPlugin implements PluginContainer {
 						new EinsteinsWorkshopCommand[] {
 								new DocumentationCommand(this)
 						}));
+		features.put(
+				FeatureTitle.WELCOME,
+				new Feature(this,
+						"welcome",
+						new WelcomeManager(this)
+				)
+		);
 	}
 
 	@SuppressWarnings("deprecation")
@@ -307,43 +309,6 @@ public class EweduPlugin implements PluginContainer {
     	getLogger().info(DOCUMENTATION_LINK);
 	}
 
-    private File loadLoginMessageFile() {
-		getLogger().info("Loading Login Message File");
-    	
-    	if (configDirectory.mkdir()) getLogger().info("EinsteinsWorkshopEDU Configuration Directory Created");
-    	
-    	// Get the file
-    	Path filePath = Paths.get(configDirectory.getPath(), LOG_IN_MESSAGE_FILE_NAME);
-        
-        if (Files.notExists(filePath)) {
-        	getLogger().info("File doesn't exist yet! Trying to create as '" + filePath + "'");
-            getAsset("default_log_in_message.txt").ifPresent(asset -> {
-				try {
-					asset.copyToFile(filePath, false);
-					getLogger().info("'" + LOG_IN_MESSAGE_FILE_NAME + "' created successfully.");
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			});
-        }
-		return filePath.toFile();
-    }
-    
-    private List<String> readLoginMessageFile(File file) {
-        try {
-            Scanner scanner = new Scanner(file);
-            List<String> lines = new LinkedList<>();
-            while (scanner.hasNext()) {
-                lines.add(scanner.nextLine());
-            }
-            scanner.close();
-            return lines;
-        } catch (Exception e) {
-			getLogger().warn("Exception while loading", e);
-            return new LinkedList<>();
-        }
-    }
-
 	public HashMap<FeatureTitle, Feature> getFeatures() {
     	return features;
 	}
@@ -352,10 +317,6 @@ public class EweduPlugin implements PluginContainer {
 		return playerLocationManager;
 	}
 
-    public List<String> getLoginMessage() {
-    	return loginMessage;
-    }
-
 	public File getDataDirectory() {
 		return new File(configDirectory.getParentFile().getParentFile().getPath() + "/" + ID);
 	}
@@ -363,8 +324,6 @@ public class EweduPlugin implements PluginContainer {
 	public SpongeCommandManager getCommandManager() {
     	return commandManager;
 	}
-
-
 
 	public static List<String> getAssignmentTypes() {
 		return assignmentTypes;
@@ -376,13 +335,18 @@ public class EweduPlugin implements PluginContainer {
 		return ID;
 	}
 
+	public File getConfigDirectory() {
+    	return configDirectory;
+	}
+
 	public enum FeatureTitle {
 		BOXES,
 		ASSIGNMENTS,
 		FREEZE,
 		HOMES,
 		MUTE,
-		DOCUMENTATION
+		DOCUMENTATION,
+		WELCOME
 	}
 
 }

@@ -3,6 +3,7 @@ package me.pietelite.einsteinsworkshopedu.listeners;
 import java.util.NoSuchElementException;
 
 import me.pietelite.einsteinsworkshopedu.features.freeze.FreezeManager;
+import me.pietelite.einsteinsworkshopedu.features.welcome.WelcomeManager;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.EventListener;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
@@ -33,7 +34,7 @@ public class LoginEventListener implements EventListener<ClientConnectionEvent.J
 				.append(Text.builder("Einstein's Workshop Server").color(TextColors.GOLD).style(TextStyles.BOLD).build())
 				.append(Text.of(TextColors.LIGHT_PURPLE, "!")).build());
 		player.sendMessage(Text.of(TextColors.LIGHT_PURPLE, "Please listen to your instructors."));
-		for (String line : plugin.getLoginMessage()) {
+		for (String line : ((WelcomeManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.WELCOME).getManager()).getWelcomeMessage()) {
 			player.sendMessage(Text.of(line));
 		}
 		

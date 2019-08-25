@@ -54,7 +54,7 @@ public class HomeManager extends EweduElementManager<Home> {
 
     private Home getHome(UUID playerUUID) {
         for (Home home : getElements()) {
-            if (home.getPlayerUUID().equals(playerUUID)) {
+            if (home.getPlayerUuid().equals(playerUUID)) {
                 return home;
             }
         }
@@ -68,7 +68,7 @@ public class HomeManager extends EweduElementManager<Home> {
     private void removeHome(UUID playerUUID) {
         List<Home> toRemove = new LinkedList<>();
         for (Home home : getElements()) {
-            if (home.getPlayerUUID().equals(playerUUID)) {
+            if (home.getPlayerUuid().equals(playerUUID)) {
                 toRemove.add(home);
             }
         }
