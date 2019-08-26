@@ -1,15 +1,21 @@
 package me.pietelite.einsteinsworkshopedu.features.homes;
 
-import co.aikar.commands.annotation.*;
-import me.pietelite.einsteinsworkshopedu.EweduPlugin;
+import co.aikar.commands.annotation.CommandAlias;
+import co.aikar.commands.annotation.CommandCompletion;
+import co.aikar.commands.annotation.CommandPermission;
+import co.aikar.commands.annotation.Conditions;
+import co.aikar.commands.annotation.Default;
+import co.aikar.commands.annotation.Subcommand;
+
+import javax.annotation.Syntax;
+
 import me.pietelite.einsteinsworkshopedu.EinsteinsWorkshopCommand;
+import me.pietelite.einsteinsworkshopedu.EweduPlugin;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
-
-import javax.annotation.Syntax;
 
 @CommandAlias("einsteinsworkshop|ew")
 @Subcommand("home|h")
@@ -23,13 +29,15 @@ public class HomeCommand extends EinsteinsWorkshopCommand {
 
   @Default
   @Conditions("player")
-  public void onDefault(CommandSource source) {
+  void onDefault(CommandSource source) {
     if (!plugin.getFeatures().get(EweduPlugin.FeatureTitle.HOMES).isEnabled) {
       source.sendMessage(Text.of(TextColors.RED, "This feature has been disabled."));
       return;
     }
     Player player = (Player) source;
-    Home home = ((HomeManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.HOMES).getManager()).getHome(player);
+    Home home = ((HomeManager) plugin.getFeatures()
+        .get(EweduPlugin.FeatureTitle.HOMES).getManager())
+        .getHome(player);
     if (home == null) {
       player.sendMessage(Text.of(TextColors.RED, "You have not yet set a home! Use /ew home set"));
     } else {
@@ -39,7 +47,7 @@ public class HomeCommand extends EinsteinsWorkshopCommand {
   }
 
   @Subcommand("help")
-  public void onHelp(CommandSource source) {
+  void onHelp(CommandSource source) {
     if (!plugin.getFeatures().get(EweduPlugin.FeatureTitle.HOMES).isEnabled) {
       source.sendMessage(Text.of(TextColors.RED, "This feature has been disabled."));
       return;
@@ -56,14 +64,16 @@ public class HomeCommand extends EinsteinsWorkshopCommand {
 
   @Subcommand("set")
   @Conditions("player")
-  public void onSet(CommandSource source) {
+  void onSet(CommandSource source) {
     if (!plugin.getFeatures().get(EweduPlugin.FeatureTitle.HOMES).isEnabled) {
       source.sendMessage(Text.of(TextColors.RED, "This feature has been disabled."));
       return;
     }
     Player player = (Player) source;
-    ((HomeManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.HOMES).getManager()).removeHome(player);
-    ((HomeManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.HOMES).getManager()).addHome(player);
+    ((HomeManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.HOMES).getManager())
+        .removeHome(player);
+    ((HomeManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.HOMES).getManager())
+        .addHome(player);
     plugin.getFeatures().get(EweduPlugin.FeatureTitle.HOMES).getManager().save();
     player.sendMessage(Text.of(TextColors.GREEN, "Home set!"));
   }
@@ -71,14 +81,16 @@ public class HomeCommand extends EinsteinsWorkshopCommand {
   @Subcommand("set")
   @Conditions("player")
   @CommandPermission("einsteinsworkshop.instructor")
-  public void onSetLocation(CommandSource source, int x, int y, int z) {
+  void onSetLocation(CommandSource source, int x, int y, int z) {
     if (!plugin.getFeatures().get(EweduPlugin.FeatureTitle.HOMES).isEnabled) {
       source.sendMessage(Text.of(TextColors.RED, "This feature has been disabled."));
       return;
     }
     Player player = (Player) source;
-    ((HomeManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.HOMES).getManager()).removeHome(player);
-    ((HomeManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.HOMES).getManager()).addHome(player, x, y, z);
+    ((HomeManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.HOMES).getManager())
+        .removeHome(player);
+    ((HomeManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.HOMES).getManager())
+        .addHome(player, x, y, z);
     plugin.getFeatures().get(EweduPlugin.FeatureTitle.HOMES).getManager().save();
     player.sendMessage(Text.of(TextColors.GREEN, "Home set!"));
   }
@@ -87,7 +99,7 @@ public class HomeCommand extends EinsteinsWorkshopCommand {
   @CommandCompletion("players")
   @Conditions("player")
   @CommandPermission("einsteinsworkshop.instructor")
-  public void onPlayer(CommandSource source, String username) {
+  void onPlayer(CommandSource source, String username) {
     if (!plugin.getFeatures().get(EweduPlugin.FeatureTitle.HOMES).isEnabled) {
       source.sendMessage(Text.of(TextColors.RED, "This feature has been disabled."));
       return;
@@ -95,7 +107,9 @@ public class HomeCommand extends EinsteinsWorkshopCommand {
     Player player = (Player) source;
     if (Sponge.getServer().getPlayer(username).isPresent()) {
       Player targetPlayer = Sponge.getServer().getPlayer(username).get();
-      Home home = ((HomeManager) plugin.getFeatures().get(EweduPlugin.FeatureTitle.HOMES).getManager()).getHome(targetPlayer);
+      Home home = ((HomeManager) plugin.getFeatures()
+          .get(EweduPlugin.FeatureTitle.HOMES).getManager())
+          .getHome(targetPlayer);
       if (home == null) {
         player.sendMessage(Text.of(TextColors.RED, "That player has not yet set a home!"));
       } else {

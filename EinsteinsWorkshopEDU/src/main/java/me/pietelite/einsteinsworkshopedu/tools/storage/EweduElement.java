@@ -4,8 +4,8 @@ import org.spongepowered.api.text.Text;
 
 public interface EweduElement {
 
-    StorageLine toStorageLine();
+  StorageLine toStorageLine();
 
-    Text formatReadable(int id);
+  Text formatReadable(int id);
 
 }

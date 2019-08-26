@@ -30,7 +30,7 @@ public class DocumentationCommand extends EinsteinsWorkshopCommand {
     try {
       source.sendMessage(ClickableMessage
           .builder(Text.of(TextColors.YELLOW, "EinsteinsWorkshopEDU Documentation"))
-          .addClickableURL("Click Here", EweduPlugin.DOCUMENTATION_LINK)
+          .addClickableUrl("Click Here", EweduPlugin.DOCUMENTATION_LINK)
           .build().getText());
     } catch (MalformedURLException e) {
       plugin.getLogger().error("Documentation link is broken: " + EweduPlugin.DOCUMENTATION_LINK);
