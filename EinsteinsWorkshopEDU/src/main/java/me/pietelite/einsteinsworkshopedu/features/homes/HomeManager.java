@@ -17,7 +17,11 @@ public class HomeManager extends EweduElementManager<Home> {
   private static final String HOME_FILE_NAME = "homes.txt";
   private static final String DEFAULT_HOME_ASSET_FILE = "default_homes.txt";
 
-  HomeManager(EweduPlugin plugin) {
+  /**
+   * Primary constructor for a HomeManager.
+   * @param plugin The functional instance of this plugin class
+   */
+  public HomeManager(EweduPlugin plugin) {
     super(
         plugin,
         line -> {
