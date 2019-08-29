@@ -6,11 +6,13 @@ import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Default;
 import co.aikar.commands.annotation.Subcommand;
 
+import java.util.Arrays;
 import javax.annotation.Syntax;
 
 import me.pietelite.einsteinsworkshopedu.EinsteinsWorkshopCommand;
 import me.pietelite.einsteinsworkshopedu.EweduPlugin;
 import me.pietelite.einsteinsworkshopedu.tools.chat.ClickableMessage;
+import me.pietelite.einsteinsworkshopedu.tools.chat.Menu;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
@@ -24,12 +26,30 @@ import org.spongepowered.api.text.format.TextColors;
 public class UnfreezeCommand extends EinsteinsWorkshopCommand {
 
   /**
-   * Basic constructor.
+   * Generates an handler for the <i>unfreeze</i> command.
    *
-   * @param plugin The main plugin object.
+   * @param plugin The primary instance of the EinsteinsWorkshopEDU plugin
    */
   public UnfreezeCommand(EweduPlugin plugin) {
-    super(plugin);
+    super(plugin,
+        new Menu.Section(
+            "Unfreeze",
+            EweduPlugin.Permissions.INSTRUCTOR,
+            Arrays.asList(
+                new ClickableMessage.ClickableCommand(
+                    "Help",
+                    EweduPlugin.Permissions.INSTRUCTOR,
+                    "/ew unfreeze help",
+                    "List all commands"
+                ),
+                new ClickableMessage.ClickableCommand(
+                    "Unfreeze All",
+                    EweduPlugin.Permissions.INSTRUCTOR,
+                    "/ew unfreeze all",
+                    "Unfreeze all students"
+                )
+            ))
+    );
   }
 
   @Default
@@ -65,7 +85,7 @@ public class UnfreezeCommand extends EinsteinsWorkshopCommand {
             .addClickableCommand("Freeze", "/ew f all",
                 Text.of(TextColors.LIGHT_PURPLE, "Freeze all players"))
             .build()
-            .getText());
+            .toText());
   }
 
   @Subcommand("player|p")
@@ -87,7 +107,7 @@ public class UnfreezeCommand extends EinsteinsWorkshopCommand {
                   .addClickableCommand("Freeze All", "/ew uf a",
                       Text.of(TextColors.LIGHT_PURPLE, "Freeze all players"))
                   .build()
-                  .getText());
+                  .toText());
           onlinePlayer.sendMessage(Text.of(TextColors.GREEN, "You have been unfrozen!"));
           return;
         } else {

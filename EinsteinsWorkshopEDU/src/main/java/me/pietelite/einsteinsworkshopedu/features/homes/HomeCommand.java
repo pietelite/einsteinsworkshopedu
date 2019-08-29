@@ -7,10 +7,13 @@ import co.aikar.commands.annotation.Conditions;
 import co.aikar.commands.annotation.Default;
 import co.aikar.commands.annotation.Subcommand;
 
+import java.util.Arrays;
 import javax.annotation.Syntax;
 
 import me.pietelite.einsteinsworkshopedu.EinsteinsWorkshopCommand;
 import me.pietelite.einsteinsworkshopedu.EweduPlugin;
+import me.pietelite.einsteinsworkshopedu.tools.chat.ClickableMessage;
+import me.pietelite.einsteinsworkshopedu.tools.chat.Menu;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
@@ -23,8 +26,37 @@ import org.spongepowered.api.text.format.TextColors;
 @CommandPermission("einsteinsworkshop.student")
 public class HomeCommand extends EinsteinsWorkshopCommand {
 
+  /**
+   * Generates an handler for the <i>home</i> command.
+   *
+   * @param plugin The primary instance of the EinsteinsWorkshopEDU plugin
+   */
   public HomeCommand(EweduPlugin plugin) {
-    super(plugin);
+    super(plugin,
+        new Menu.Section(
+            "Freeze",
+            EweduPlugin.Permissions.STUDENT,
+            Arrays.asList(
+                new ClickableMessage.ClickableCommand(
+                    "Help",
+                    EweduPlugin.Permissions.INSTRUCTOR,
+                    "/ew home help",
+                    "List all commands"
+                ),
+                new ClickableMessage.ClickableCommand(
+                    "Go Home",
+                    EweduPlugin.Permissions.STUDENT,
+                    "/ew home",
+                    "Teleport yourself to your own home"
+                ),
+                new ClickableMessage.ClickableCommand(
+                    "Set Home",
+                    EweduPlugin.Permissions.STUDENT,
+                    "/ew home set",
+                    "Set your home where you are"
+                )
+            )
+    ));
   }
 
   @Default

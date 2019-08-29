@@ -8,12 +8,15 @@ import co.aikar.commands.annotation.Subcommand;
 
 import com.flowpowered.math.vector.Vector3d;
 
+import java.util.Arrays;
 import javax.annotation.Nonnull;
 import javax.annotation.Syntax;
 
 import me.pietelite.einsteinsworkshopedu.EinsteinsWorkshopCommand;
 import me.pietelite.einsteinsworkshopedu.EweduPlugin;
 
+import me.pietelite.einsteinsworkshopedu.tools.chat.ClickableMessage;
+import me.pietelite.einsteinsworkshopedu.tools.chat.Menu;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.Transform;
@@ -32,8 +35,43 @@ import org.spongepowered.api.world.World;
 @CommandPermission("einsteinsworkshop.instructor")
 public class BoxCommand extends EinsteinsWorkshopCommand {
 
+  /**
+   * Generates an handler for the <i>boxes</i> command.
+   *
+   * @param plugin The primary instance of the EinsteinsWorkshopEDU plugin
+   */
   public BoxCommand(EweduPlugin plugin) {
-    super(plugin);
+    super(plugin,
+        new Menu.Section(
+            "Boxes",
+            EweduPlugin.Permissions.INSTRUCTOR,
+            Arrays.asList(
+                new ClickableMessage.ClickableCommand(
+                    "Help",
+                    EweduPlugin.Permissions.INSTRUCTOR,
+                    "/ew box help",
+                    "List all commands"
+                ),
+                new ClickableMessage.ClickableCommand(
+                    "List",
+                    EweduPlugin.Permissions.INSTRUCTOR,
+                    "/ew box list",
+                    "List all boxes"
+                ),
+                new ClickableMessage.ClickableCommand(
+                    "Wand",
+                    EweduPlugin.Permissions.INSTRUCTOR,
+                    "/ew box wand",
+                    "Get the Boxes wand"
+                ),
+                new ClickableMessage.ClickableCommand(
+                    "Create",
+                    EweduPlugin.Permissions.INSTRUCTOR,
+                    "/ew box create",
+                    "Create a box with the designated selection"
+                )
+            )
+    ));
   }
 
   @Default

@@ -41,6 +41,7 @@ import me.pietelite.einsteinsworkshopedu.listeners.TargetEntityEventListener;
 import me.pietelite.einsteinsworkshopedu.listeners.TargetInventoryEventListener;
 import me.pietelite.einsteinsworkshopedu.tools.Feature;
 
+import me.pietelite.einsteinsworkshopedu.tools.chat.Menu;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
@@ -119,24 +120,6 @@ public class EweduPlugin implements PluginContainer {
   private PlayerLocationManager playerLocationManager;
 
   private static List<String> assignmentTypes;
-
-  /**
-   * Unused Constructor.
-   *
-   * @param defaultConfig   unused
-   * @param configManager   unused
-   * @param configDirectory unused
-   * @param container       unused
-   */
-  public EweduPlugin(Path defaultConfig,
-                     ConfigurationLoader<CommentedConfigurationNode> configManager,
-                     File configDirectory,
-                     PluginContainer container) {
-    this.defaultConfig = defaultConfig;
-    this.configManager = configManager;
-    this.configDirectory = configDirectory;
-    this.container = container;
-  }
 
   /**
    * Run initialization sequence before the game starts.
@@ -238,6 +221,7 @@ public class EweduPlugin implements PluginContainer {
     commandManager = new SpongeCommandManager(this.container);
     commandManager.enableUnstableAPI("help");
     commandManager.createRootCommand("einsteinsworkshop");
+    commandManager.registerCommand(new EinsteinsWorkshopCommand(this, Menu.Section.NONE));
     registerConditions();
     registerCompletions();
   }
@@ -387,6 +371,24 @@ public class EweduPlugin implements PluginContainer {
     MUTE,
     DOCUMENTATION,
     WELCOME
+  }
+
+  public enum Permissions {
+    INSTRUCTOR {
+      public String toString() {
+        return "einsteinsworkshop.instructor";
+      }
+    },
+    STUDENT {
+      public String toString() {
+        return "einteinsworkshop.student";
+      }
+    },
+    IMMUNITY {
+      public String toString() {
+        return "einsteinsworkshop.immunity";
+      }
+    }
   }
 
 }

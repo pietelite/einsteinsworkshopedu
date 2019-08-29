@@ -3,8 +3,10 @@ package me.pietelite.einsteinsworkshopedu.tools.chat;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import me.pietelite.einsteinsworkshopedu.EweduPlugin;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
+import org.spongepowered.api.text.format.TextColor;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyles;
 
@@ -12,11 +14,13 @@ public class ClickableMessage {
 
   private Text text;
 
+  private static final TextColor DEFAULT_HOVER_MESSAGE_COLOR = TextColors.LIGHT_PURPLE;
+
   private ClickableMessage(Text text) {
     this.text = text;
   }
 
-  public Text getText() {
+  public Text toText() {
     return text;
   }
 
@@ -24,12 +28,24 @@ public class ClickableMessage {
     return new Builder(messageBody);
   }
 
+  public static Builder builder(String messageBodyRaw) {
+    return builder(Text.of(TextColors.YELLOW, messageBodyRaw));
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
   public static class Builder {
 
-    private Text.Builder builder;
+    private final Text.Builder builder;
 
     private Builder(Text messageBody) {
-      builder = Text.builder().append(messageBody);
+      builder = Text.builder().append(messageBody).append(Text.of(" "));
+    }
+
+    private Builder() {
+      builder = Text.builder();
     }
 
     /**
@@ -43,13 +59,26 @@ public class ClickableMessage {
      */
     public Builder addClickableCommand(String name, String command, Text hoverMessage) {
       Text clickable = Text.builder()
-          .append(Text.of(TextColors.GOLD, TextStyles.ITALIC, " [",
-              Text.of(TextColors.GRAY, name), "]"))
+          .append(Text.of(TextColors.GOLD, TextStyles.ITALIC, "[",
+              Text.of(TextColors.GRAY, name), "] "))
           .onClick(TextActions.runCommand(command))
           .onHover(TextActions.showText(hoverMessage))
           .build();
       builder.append(clickable);
       return this;
+    }
+
+    private Builder addClickableCommand(String name, String command, String hoverMessage) {
+      return addClickableCommand(name, command, Text.builder()
+          .append(Text.of(DEFAULT_HOVER_MESSAGE_COLOR, hoverMessage + "\n\n"))
+          .append(Text.of(TextColors.GRAY, command))
+          .build());
+    }
+
+    Builder addClickableCommand(ClickableCommand clickable) {
+      return addClickableCommand(clickable.getName(),
+          clickable.getCommand(),
+          clickable.getHoverMessage());
     }
 
     /**
@@ -75,6 +104,47 @@ public class ClickableMessage {
       return new ClickableMessage(builder.build());
     }
 
+  }
+
+  public static class ClickableCommand {
+
+    private final String name;
+    private final EweduPlugin.Permissions permission;
+    private final String command;
+    private final String hoverMessage;
+
+    /**
+     * Create an encapsulation for all objects necessary to create a clickable object.
+     *
+     * @param name         The display name of this clickable item
+     * @param permission   The permission level associated with the command
+     * @param command      The string version of the command
+     * @param hoverMessage The message which displays above the display name once
+     *                     the cursor hovers over it
+     */
+    public ClickableCommand(String name, EweduPlugin.Permissions permission,
+                            String command, String hoverMessage) {
+      this.name = name;
+      this.permission = permission;
+      this.command = command;
+      this.hoverMessage = hoverMessage;
+    }
+
+    public String getName() {
+      return name;
+    }
+
+    EweduPlugin.Permissions getPermission() {
+      return permission;
+    }
+
+    public String getCommand() {
+      return command;
+    }
+
+    String getHoverMessage() {
+      return hoverMessage;
+    }
   }
 
 }

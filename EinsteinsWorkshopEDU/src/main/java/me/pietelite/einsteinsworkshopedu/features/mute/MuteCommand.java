@@ -6,11 +6,13 @@ import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Default;
 import co.aikar.commands.annotation.Subcommand;
 
+import java.util.Arrays;
 import javax.annotation.Syntax;
 
 import me.pietelite.einsteinsworkshopedu.EinsteinsWorkshopCommand;
 import me.pietelite.einsteinsworkshopedu.EweduPlugin;
 import me.pietelite.einsteinsworkshopedu.tools.chat.ClickableMessage;
+import me.pietelite.einsteinsworkshopedu.tools.chat.Menu;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
@@ -24,12 +26,30 @@ import org.spongepowered.api.text.format.TextColors;
 public class MuteCommand extends EinsteinsWorkshopCommand {
 
   /**
-   * Basic constructor.
+   * Generates an handler for the <i>mute</i> command.
    *
-   * @param plugin The main plugin object.
+   * @param plugin The primary instance of the EinsteinsWorkshopEDU plugin
    */
   public MuteCommand(EweduPlugin plugin) {
-    super(plugin);
+    super(plugin,
+        new Menu.Section(
+            "Mute",
+            EweduPlugin.Permissions.INSTRUCTOR,
+            Arrays.asList(
+                new ClickableMessage.ClickableCommand(
+                    "Help",
+                    EweduPlugin.Permissions.INSTRUCTOR,
+                    "/ew mute help",
+                    "List all commands"
+                ),
+                new ClickableMessage.ClickableCommand(
+                    "Mute All",
+                    EweduPlugin.Permissions.INSTRUCTOR,
+                    "/ew mute all",
+                    "Mute all students"
+                )
+            ))
+    );
   }
 
   @Default
@@ -68,7 +88,7 @@ public class MuteCommand extends EinsteinsWorkshopCommand {
             .addClickableCommand("Unmute", "/ew um all",
                 Text.of(TextColors.LIGHT_PURPLE, "Unmute all players"))
             .build()
-            .getText());
+            .toText());
   }
 
   @Subcommand("player|p")
@@ -93,7 +113,7 @@ public class MuteCommand extends EinsteinsWorkshopCommand {
                     .addClickableCommand("Unmute All", "/ew um a",
                         Text.of(TextColors.LIGHT_PURPLE, "Unmute all players"))
                     .build()
-                    .getText());
+                    .toText());
           } else {
             source.sendMessage(Text.of(TextColors.RED, "That player is already muted!"));
           }

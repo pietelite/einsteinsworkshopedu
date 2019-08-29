@@ -7,6 +7,7 @@ import co.aikar.commands.annotation.Conditions;
 import co.aikar.commands.annotation.Default;
 import co.aikar.commands.annotation.Subcommand;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -18,6 +19,8 @@ import me.pietelite.einsteinsworkshopedu.EweduPlugin;
 import me.pietelite.einsteinsworkshopedu.features.assignments.Assignment.BodyTooLongException;
 import me.pietelite.einsteinsworkshopedu.features.assignments.Assignment.TitleTooLongException;
 
+import me.pietelite.einsteinsworkshopedu.tools.chat.ClickableMessage;
+import me.pietelite.einsteinsworkshopedu.tools.chat.Menu;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
@@ -31,8 +34,32 @@ import org.spongepowered.api.text.format.TextStyles;
 @CommandPermission("einsteinsworkshop.student")
 public class AssignmentCommand extends EinsteinsWorkshopCommand {
 
+  /**
+   * Generates an handler for the <i>assignments</i> command.
+   *
+   * @param plugin The primary instance of the EinsteinsWorkshopEDU plugin
+   */
   public AssignmentCommand(EweduPlugin plugin) {
-    super(plugin);
+    super(
+        plugin,
+        new Menu.Section(
+            "Assignments",
+            EweduPlugin.Permissions.STUDENT,
+            Arrays.asList(
+                new ClickableMessage.ClickableCommand(
+                    "Help",
+                    EweduPlugin.Permissions.STUDENT,
+                    "/ew assignment help",
+                    "Show all commands"
+                ),
+                new ClickableMessage.ClickableCommand(
+                    "List",
+                    EweduPlugin.Permissions.STUDENT,
+                    "/ew assignment list",
+                    "List all assignments"
+                )
+            )
+        ));
   }
 
   @Default
@@ -141,8 +168,8 @@ public class AssignmentCommand extends EinsteinsWorkshopCommand {
       invalidAssignmentType(source);
     } catch (TitleTooLongException e) {
       source.sendMessage(Text.of(TextColors.RED, "Titles can only be ",
-                      Text.of(TextColors.GOLD, Assignment.MAXIMUM_TITLE_LENGTH),
-                      " characters long."));
+          Text.of(TextColors.GOLD, Assignment.MAXIMUM_TITLE_LENGTH),
+          " characters long."));
     }
   }
 
